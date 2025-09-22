@@ -1,0 +1,89 @@
+{% extends 'home_admin.html' %}
+
+{% load static %}
+
+{% block title %}Inventory: Countries Relationships{% endblock %}
+
+{% block content %}
+
+    <!-- Custom JS -->
+<script type="text/javascript" src="{% static 'js/inventariohlag/adminpaises.js' %}"></script>  
+
+<div class="container mt-4">
+
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <div class="table-responsive">
+                <table style="width:100%">
+                    <tr>
+                        <td width="90%" class="titform20">Area</td>
+                        <td width="10%" class="text8c">
+                            <button class='btn btn-sm btn-outline-info tip' title='Add Area' onClick='AgregarRegistro()' >
+                                <i class='bi-solid bi-plus'></i>
+                            </button>                        
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% include 'adminpaises_ajax_listar.html' %}
+
+</div>
+
+<div id="diagedit">
+    <div class="container-fluid py-3">
+        <div class="row">
+            <div class="col-lg-12">            
+                <div class="row">
+                    <div class="col-lg-12 mx-auto">
+                        <div class="card border-secondary">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="tit10lb">Key:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                        </div>
+                                        <input type="text" readonly name="id" id="id" size="10" class="text8r"/>
+                                    </div>
+                                </div> 
+                                <div class="form-group">
+                                    <label class="tit10lb">Country:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
+                                        </div>
+                                        <select required="required" class="form-control w-auto" name="pais" id="pais" style="font-size:11px;">
+                                            {% for pais in paises %}
+                                                <option value="{{ pais.id }}" class="text8l">{{ pais.nombre }}</option>
+                                            {% endfor %}
+                                        </select>                                    
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="tit10lb">Related Country:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                        </div>
+                                        <select required="required" class="form-control w-auto" name="paisadmin" id="paisadmin" style="font-size:11px;">
+                                            {% for pais in paises %}
+                                                <option value="{{ pais.id }}" class="text8l">{{ pais.nombre }}</option>
+                                            {% endfor %}
+                                        </select>                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

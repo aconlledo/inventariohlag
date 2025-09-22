@@ -1,0 +1,49 @@
+
+<div id="datatablediv">
+    <table id="tablaregs" class="table table-striped table-bordered table-hover" style="width:100%">
+        <thead >
+            <tr>
+                <th width="5%" class="tdtit10">Active<br />Type</th>
+                <th width="12%" class="tdtit10">Active<br />Identifier</th>
+                <th width="15%" class="tdtit10">Active<br />Name</th>
+                <th width="15%" class="tdtit10">Manufacturer</th>
+                <th width="15%" class="tdtit10">Model</th>
+                <th width="15%" class="tdtit10">Serial Number</th>
+                <th width="10%" class="tdtit10">Country</th>
+                <th width="13%" class="tdtit10">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for activo in activos %}
+            <tr>
+                <td class="text8c" id="id{{activo.id}}">
+                    {% for code, name in tiposactivos %}
+                        {% if code ==  activo.tipo%}
+                            {{ name }}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td class="text8c" id="iden{{activo.id}}">{{activo.identificador}}</td>
+                <td class="text8c" id="nom{{activo.id}}">{{activo.nombre}}</td>
+                <td class="text8c" id="fab{{activo.id}}">{{activo.fabricante.nombre}}</td>
+                <td class="text8c" id="mod{{activo.id}}">{{activo.modelo.nombre}}</td>
+                <td class="text8c" id="ser{{activo.id}}">{{activo.serial}}</td>
+                <td class="text8c" id="buil{{activo.id}}">{{activo.country.nombre}}</td>
+                <td class="text8c"> 
+                    <button class='btn btn-sm btn-outline-success tip' title='View Asset' onClick='VerRegistro({{activo.id|stringformat:"d"}})'>
+                        <i class='bi-solid bi-search'></i>
+                    </button> 
+                {% if request.user.is_superuser %}
+                    <button class='btn btn-sm btn-outline-primary tip' title='Edit Asset' onClick='EditarRegistro({{activo.id|stringformat:"d"}})'>
+                        <i class='bi-solid bi-pencil'></i>
+                    </button>
+                    <button class='btn btn-sm btn-outline-danger tip' title='Delete Asset' onClick='BorrarRegistro({{activo.id|stringformat:"d"}})'>
+                        <i class='bi-solid bi-trash'></i>
+                    </button>
+                {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>   
+</div>

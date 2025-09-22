@@ -1,0 +1,5 @@
+<select required="required" class="form-control w-auto" name="ciudad" id="ciudad" style="font-size:11px;">
+    {% for ciudad in ciudades %}
+        <option value="{{ ciudad.id }}" class="text8l">{{ ciudad.nombre }}</option>
+    {% endfor %}
+</select>

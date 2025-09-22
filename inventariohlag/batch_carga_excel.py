@@ -1,0 +1,173 @@
+#
+################################################  START PROCESS  ################################################
+#   
+import os
+from django import setup
+import sys
+from openpyxl import load_workbook
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+sys.path.append(str(BASE_DIR))
+
+# === Configurar Django ===
+# sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "inventariohlag.settings")
+setup()
+
+# === Ruta del archivo Excel ===
+RUTA_ARCHIVO = os.path.join("..\data", "gestion_de_activos.xlsm")  
+
+from tablas.models import *
+from inventariohlag.models import *
+from inventariohlag.funciones import *
+
+def importar_excel():
+    if not os.path.exists(RUTA_ARCHIVO):
+        print(f"Archivo no encontrado: {RUTA_ARCHIVO}")
+        return
+    total = 0
+    factual = 3
+    wb = load_workbook(filename=RUTA_ARCHIVO, data_only=True)
+    hoja = wb.active
+    for fila in hoja.iter_rows(min_row=3, values_only=True): 
+        atype,aid,specint,aname,modelo,desc1,desc2,desc3,item,serial,manufacturer,provider,owner,invoice,pdated,pvalue,adated,accounted,uvalue,location,building,floor,zone,city,country,status,sdated,userinv= fila
+        if (desc1 is None):
+            desc1 = ''
+        else:    
+            desc1 = desc1.strip()
+        if (desc2 is None):   
+            desc2 = ''
+        else: 
+            desc2 = desc2.strip()
+        if (desc3 is None):   
+            desc3 = ''
+        else: 
+            desc3 = desc3.strip()
+        descrip = f'{desc1} {desc2} {desc3}' 
+        if (manufacturer in (None, 'N/A','')):
+            fabricanteid = None
+        else:
+            manufacturer = manufacturer.strip()
+            try:
+                fabricanteid = Fabricantes.objects.get(nombre=manufacturer).id
+            except Fabricantes.DoesNotExist:
+                fabricanteid = Fabricantes.objects.create(nombre=manufacturer).id
+        if (modelo is None):
+            modeloid = None
+        else:
+            modelo = modelo.strip()
+            try:
+                modeloid = Modelos.objects.get(nombre=modelo).id
+            except Modelos.DoesNotExist:
+                modeloid = Modelos.objects.create(nombre=modelo,fabricante_id=fabricanteid).id
+        if (aname is None):  
+            nomactivoid = None
+        else:      
+            aname = aname.strip()
+            try:
+                nomactivoid = NombresActivos.objects.get(nombre=aname).id
+            except NombresActivos.DoesNotExist:
+                nomactivoid = NombresActivos.objects.create(nombre=aname).id
+        if (zone is None):     
+            zonaid = None
+        else:     
+            zone = zone.strip()
+            try:
+                zonaid = Zonas.objects.get(nombre=zone).id
+            except Zonas.DoesNotExist:
+                zonaid = Zonas.objects.create(nombre=zone).id
+        if (userinv in (None, 'N/A')):
+            usuarioid = None
+        else:
+            try:
+                usuarioid = UsuariosInventario.objects.get(nombre=userinv).id
+            except UsuariosInventario.DoesNotExist:
+                usuarioid = UsuariosInventario.objects.create(nombre=userinv).id 
+        if (country is None):     
+            countryid = None
+        else:     
+            country = country.strip()
+            try:
+                countryid = Paises.objects.get(nombre=country).id
+            except Paises.DoesNotExist:
+                countryid = Paises.objects.create(nombre=country).id                
+        if (city is None):     
+            cityid = None
+        else:     
+            city = city.strip()
+            try:
+                cityid = Ciudades.objects.get(nombre=city).id
+            except Ciudades.DoesNotExist:
+                cityid = Ciudades.objects.create(nombre=city,pais_id=countryid).id                  
+        if (building is None):     
+            buildingid = None
+        else:     
+            building = building.strip()
+            try:
+                buildingid = Edificios.objects.get(nombre=building).id
+            except Edificios.DoesNotExist:
+                buildingid = Edificios.objects.create(nombre=building,pais_id=countryid,ciudad_id=cityid).id                   
+        accounted = '0' if accounted in (None, 'N/A') else '1'
+        if (atype is None):   
+            atypeid = None
+        else:
+            atype = atype.strip()
+            atypeid = next((i for i, (_, nombre) in enumerate(TiposActivos.TIPOS) if nombre == atype), None)
+        if (aid is not None):   
+            aid = aid.strip()
+        if (specint is None):  
+            spec = None
+        else:
+            spec = str(specint) 
+            spec = spec.strip()
+        if (owner is None):  
+            ownerid = None
+        else: 
+            owner = owner.strip()
+            ownerid = next((i for i, (_, nombre) in enumerate(Owners.OWNERS) if nombre == owner), None)
+        if (location is None):   
+            locationid = None
+        else:
+            location = location.strip()
+            locationid = next((i for i, (_, nombre) in enumerate(Locations.LOCATIONS) if nombre == location), None)
+        if (status is None):   
+            statusid = None
+        else:
+            status = status.strip()
+            statusid = next((i for i, (_, nombre) in enumerate(Estados.ESTADOS) if nombre == status), None)
+        adate = fecha_str_to_sql(adated)
+        pdate = fecha_str_to_sql(pdated)
+        sdate = fecha_str_to_sql(sdated)
+        try:
+            Activos.objects.create(tipo=atypeid,identificador=aid,nombre_id=nomactivoid,modelo_id=modeloid,fabricante_id=fabricanteid,detalle=descrip,
+                                    serial=serial,proveedor_id=provider,owner=ownerid,factura=invoice,fcompra=pdate,vcompra=pvalue,factivacion=adate,
+                                    accounted=accounted,vactual=uvalue,location=locationid,building_id=buildingid,floor=floor,zona_id=zonaid,city_id=cityid,country_id=countryid,
+                                    estado=statusid,festado=sdate,usuarioinv_id=usuarioid)  
+            total += 1        
+            print(f"Fila {factual} Ingresada. {fila}")                     
+        except Exception as e:
+            print(f'Error en Fila {factual} = '+str(e))   
+        factual += 1                     
+    print(f"Se Ingresaron {total} filas.")
+
+if __name__ == "__main__":
+    importar_excel()
+
+
+
+
+'''        if (pdated is None):   
+            pdate = None
+        else:
+            pdate = str(pdated) 
+            pdate = pdate.strip()
+            pdate = pdate[:10]
+        if (sdated is None):   
+            sdate = None
+        else:
+            sdate = str(sdated) 
+            sdate = sdate.strip()
+            sdate = sdate[:10]
+'''

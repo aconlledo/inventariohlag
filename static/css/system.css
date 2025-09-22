@@ -1,0 +1,400 @@
+/* system.css Copyright (c) 2025 Vilco SpA  */
+
+.modal-sheet .modal-dialog {
+  width: 340px;
+  transition: bottom .75s ease-in-out;
+}
+
+.modal-sheet .modal-footer {
+  padding-bottom: 2rem;
+}
+
+.espacio-reducido {
+  margin-bottom: 2px !important; /* o 0 si lo quieres pegado */
+}
+
+.link-cp {
+  font-size: 1.125rem; /* 1.125rem = 18px */
+}
+
+.span-cp {
+  font-size: 1rem; /* 1rem = 16px */
+}
+
+.input-calendar {
+  position: relative;
+  display: inline-block;
+}
+
+.input-calendar input {
+  padding-right: 30px; /* espacio para el ícono */
+}
+
+.calendar-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+}
+
+
+.submit-link {
+  background: none;
+  color: blue;
+  text-decoration: underline;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+.submit-link:hover {
+  color: darkblue;
+}
+
+.resaltado {
+  background-color: #ffcccb; /* Color de resaltado */
+}
+
+.custom-textarea {
+  background-color: #f0f0f0;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.custom-textarea:focus {
+  border-color: #0056b3;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.25);
+}
+
+.fixed-size-textarea {
+  resize: none; /* Deshabilita el cambio de tamaño */
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Check Password */
+
+.Short {
+  width: 100%;
+  background-color: #dc3545;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  height: 3px;
+  color: #dc3545;
+  font-weight: 500;
+  font-size: 12px;
+}
+.Weak {
+  width: 100%;
+  background-color: #ffc107;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  height: 3px;
+  color: #ffc107;
+  font-weight: 500;
+  font-size: 12px;
+}
+.Good {
+  width: 100%;
+  background-color: #28a745;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  height: 3px;
+  color: #28a745;
+  font-weight: 500;
+  font-size: 12px;
+}
+.Strong {
+  width: 100%;
+  background-color: #d39e00;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  height: 3px;
+  color: #d39e00;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.link-chk span {
+  display: inline-flex;
+  align-items: center;
+}
+.link-chk input[type="checkbox"] {
+  margin-right: 5px; /* Espacio entre el checkbox y el texto */
+}
+
+/* Mensaje Conectando (1) */ 
+
+#loader-msg-wait {
+  display: none; /* Se muestra con jQuery */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 9999;
+  text-align: center;
+  padding-top: 200px;
+  font-family: Arial, sans-serif;
+}
+
+#loader-msg-wait .spinner {
+  margin: 0 auto 10px auto;
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+#loader-msg-wait p {
+  font-size: 18px;
+  color: #333;
+}
+
+/* Mensaje Conectando en Modal */ 
+
+.modal-loader-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4); /* fondo semitransparente */
+  z-index: 1055; /* más alto que el contenido del modal */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+}
+
+.modal-loader-spinner {
+  text-align: center;
+}
+/* otros */ 
+  
+.foto-especialista {
+  width: 50px;
+  height: 50px;
+}
+
+.ui-datepicker-trigger {
+  width: 40px; /* Ancho personalizado */
+  height: 40px; /* Altura personalizada */
+}
+
+.custom-width-date {
+  width: 200px !important; /* Ancho personalizado */
+}
+
+.input-group-addon {
+  position: relative;
+}
+
+.ui-datepicker-trigger {
+  position: absolute;
+  top: 50%;
+  right: 0px; /* Ajusta el valor según sea necesario */
+  transform: translateY(-50%);
+}
+  
+#div-msg-wait {
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    background:black;
+    width:100%;
+    height:100%;
+  }
+	 
+#load-div  {
+      width: 300px;
+      height: 200px;
+      background-color: white;
+      text-align:center;
+      position:absolute;
+      left: 50%;
+      top: 50%;
+      margin-left:-150px;
+      margin-top: -100px;
+  }
+	 
+#queue {
+	border: 1px solid #E5E5E5;
+	height: 177px;
+	overflow: auto;
+	margin-bottom: 10px;
+	padding: 0 3px 3px;
+	width: 300px;
+}	 	 
+
+
+.LV_validation_message{
+	font-size : 10px;
+  font-weight:bold;
+  margin:0 0 0 2px;
+}
+
+.LV_valid {
+    color:#00CC00;
+}
+
+.LV_invalid {
+    color:#CC0000;
+}
+
+.LV_valid_field,
+input.LV_valid_field:hover,
+input.LV_valid_field:active,
+textarea.LV_valid_field:hover,
+textarea.LV_valid_field:active {
+    border: 1px solid #00CC00;
+}
+
+.LV_invalid_field,
+input.LV_invalid_field:hover,
+input.LV_invalid_field:active,
+textarea.LV_invalid_field:hover,
+textarea.LV_invalid_field:active {
+    border: 1px solid #CC0000;
+}
+
+.mboton {
+ height: 20px;    /* altura */
+ width:  10px     /* ancho */
+}
+
+div.ui-tabs-panel{
+    padding: 0px;
+    margin: 0;
+    border: 0px solid #464c54;
+ }
+ 
+
+.ui.panel {
+    background-color:#ffffff;
+    padding: 0px;
+    margin: 0;
+    border: 0px solid #464c54;
+}
+
+.ui-autocomplete-loading {
+    background: white url("../imagenes/ajax-loader1.gif") right center no-repeat;
+	}
+	
+.msgWait  {
+  font-family: Arial, Verdana,  Helvetica, sans-serif;
+  font-size: 12pt;
+  font-weight: bold;
+  color: 003366;
+  text-align: center;
+}
+	
+.rowCount-grid {
+    float: right;
+    font-size: 10px;
+    color: #003366;
+    padding-right: 550px;
+	}
+	
+.DataTables_sort_wrapper span {
+    float: right;
+    }
+
+.text8  {
+  font-family: Verdana,Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  color: black;
+}
+
+.text8b  {
+  font-family: Verdana,Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  font-weight: bold;
+  color: black;
+}
+
+.text8r  {
+  font-family: Verdana,Arial, Helvetica, sans-serif;
+  font-size: 8pt  !important;
+  color: black;
+  text-align: right  !important;
+}
+
+.text8l  {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 8pt  !important;
+  color: black;
+  text-align: left  !important;
+}
+
+.text8c  {
+  font-family: Verdana,Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  color: black;
+  text-align: center
+}
+
+.text8bc  {
+  font-family: Verdana,Arial, Helvetica, sans-serif;
+  font-size: 8pt;
+  font-weight: bold;
+  color: black;
+  text-align: center
+}
+
+/* Usado en encabezado de tablas */
+.titform20 {
+  font-family: Arial, Verdana, Helvetica, sans-serif;
+  font-size: 20pt;
+  font-weight: bold;
+  text-align: center !important;
+}
+
+/* Usado en titulos de datatables */
+.tdtit10  {
+  font-family: Arial, Verdana,  Helvetica, sans-serif;
+  font-size: 10pt  !important;
+  font-weight: bold;
+  background-color: #DBDBDB;
+  color: #003366;
+  text-align: center  !important;
+  vertical-align: middle !important;
+}
+
+/* Usado en modals */
+.tit10lb {
+  font-family: Arial, Verdana,  Helvetica, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  color: #003366;
+  text-align: left;
+}
+
+.tit12lb {
+  font-family: Arial, Verdana,  Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  color: #003366;
+  text-align: left;
+}
+
+.titform12 {
+  font-family: Arial, Verdana, Helvetica, sans-serif;
+  font-size: 12pt;
+  font-weight: bold;
+  text-align: center !important;
+}

@@ -1,0 +1,414 @@
+{% extends 'home_admin.html' %}
+
+{% load static %}
+
+{% block title %}Inventory: Assets{% endblock %}
+
+{% block content %}
+
+    <!-- Custom JS -->
+<script type="text/javascript" src="{% static 'js/inventariohlag/activos.js' %}"></script>  
+
+<div class="container mt-4">
+
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <div class="table-responsive">
+                <table style="width:100%">
+                    <tr>
+                        <td width="90%" class="titform20">Assets</td>
+                        <td width="10%" class="text8c">
+                            <button class='btn btn-sm btn-outline-info tip' title='Add Asset' onClick='AgregarRegistro()' >
+                                <i class='bi-solid bi-plus'></i>
+                            </button>                        
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% include 'activos_ajax_listar.html' %}
+
+</div>
+
+<div id="diagedit">
+    <div class="container-fluid py-3">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-12 mx-auto">
+                        <div class="card border-secondary">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Key:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                                </div>
+                                                <input type="text" name="id" id="id" size="20" class="form-control w-50 text8l" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Active Identifier:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
+                                                </div>
+                                                <input type="text" name="identificador" id="identificador" size="20" class="form-control w-50 text8l uppcase" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Active Type:</label>
+                                            <div class="input-group">                                
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="tipo" id="tipo" style="font-size:11px;">
+                                                    {% for code, name in tiposactivos %}
+                                                        <option value="{{ code }}" class="text8l">{{ name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Active Name:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="nombre" id="nombre" style="font-size:11px;">
+                                                    {% for nombreactivo in nombresactivos %}
+                                                        <option value="{{ nombreactivo.id }}" class="text8l">{{ nombreactivo.nombre }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Serial Number:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
+                                                </div>
+                                                <input type="text" name="serial" id="serial" size="45" maxlength="45" class="form-control w-50 text8l uppcase" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Manufacturer:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="fabricante" id="fabricante" style="font-size:11px;">
+                                                    {% for fabricante in fabricantes %}
+                                                        <option value="{{ fabricante.id }}" class="text8l">{{ fabricante.nombre }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Model:</label>
+                                            <div class="input-group">                                
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <div id="divmodelos" name="divmodelos">
+                                                    <select required="required" class="form-control w-auto" name="modelo" id="modelo" style="font-size:11px;">
+                                                        {% for modelo in modelos %}
+                                                            <option value="{{ modelo.id }}" class="text8l">{{ modelo.nombre }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </div>  
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Provider:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="proveedor" id="proveedor" style="font-size:11px;">
+                                                    {% for proveedor in proveedores %}
+                                                        <option value="{{ proveedor.id }}" class="text8l">{{ proveedor.nombre }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Invoice Number:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
+                                                </div>
+                                                <input type="text" name="factura" id="factura" size="45" maxlength="45" class="form-control w-50 text8l uppcase" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">                                       
+                                            <label class="tit10lb">Purchase Date:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                                </div>
+                                                <input type="text" id="fcompra" name="fcompra" size="20" maxlength="20" class="form-control mt-0 w-50 text8l"  />
+                                            </div>
+                                        </div> 
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Purchase Value:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
+                                                </div>
+                                                <input type="text" name="vcompra" id="vcompra" size="20" maxlength="45" class="form-control w-50 text8l" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                                   
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Owner:</label>
+                                            <div class="input-group">                                
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="owner" id="owner" style="font-size:11px;">
+                                                    {% for indice, texto in owners %}
+                                                        <option value="{{ indice }}" class="text8l">{{ texto }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Accounted:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="accounted" id="accounted" style="font-size:11px;">
+                                                    {% for indice, texto in contabilizados %}
+                                                        <option value="{{ indice }}" class="text8l">{{ texto }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">                                       
+                                            <label class="tit10lb">Activation Date:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                                </div>
+                                                <input type="text" id="factivacion" name="factivacion" size="20" maxlength="20" class="form-control mt-0 w-50 text8l"  />
+                                            </div>
+                                        </div> 
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Updated Value:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
+                                                </div>
+                                                <input type="text" name="vactual" id="vactual" size="20" maxlength="45" class="form-control w-50 text8l" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                                  
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Location:</label>
+                                            <div class="input-group">                                
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="location" id="location" style="font-size:11px;">
+                                                    {% for indice, texto in locations %}
+                                                        <option value="{{ indice }}" class="text8l">{{ texto }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Building:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="building" id="building" style="font-size:11px;">
+                                                    {% for edificio in edificios %}
+                                                        <option value="{{ edificio.id }}" class="text8l">{{ edificio.nombre }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Floor:</label>
+                                            <div class="input-group">                                
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
+                                                </div>
+                                                <input type="text" name="floor" id="floor" size="12" maxlength="12" class="form-control w-50 text8l uppcase" />
+                                            </div>
+                                        </div> 
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Zone:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="zona" id="zona" style="font-size:11px;">
+                                                    {% for zona in zonas %}
+                                                        <option value="{{ zona.id }}" class="text8l">{{ zona.nombre }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>     
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">City:</label>
+                                            <div class="input-group">                                
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="city" id="city" style="font-size:11px;">
+                                                    {% for ciudad in ciudades %}
+                                                        <option value="{{ ciudad.id }}" class="text8l">{{ ciudad.nombre }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Country:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="country" id="country" style="font-size:11px;">
+                                                    {% for pais in paises %}
+                                                        <option value="{{ pais.id }}" class="text8l">{{ pais.nombre }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">User:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="usuarioinv" id="usuarioinv" style="font-size:11px;">
+                                                    {% for usuarioinv in usuariosinv %}
+                                                        <option value="{{ usuarioinv.id }}" class="text8l">{{ usuarioinv.nombre }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>   
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Status:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto" name="estado" id="estado" style="font-size:11px;">
+                                                    {% for indice, texto in estados %}
+                                                        <option value="{{ indice }}" class="text8l">{{ texto }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">                                       
+                                            <label class="tit10lb">Status Date:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                                </div>
+                                                <input type="text" id="festado" name="festado" size="20" maxlength="20" class="form-control mt-0 w-50 text8l"  />
+                                            </div>
+                                        </div> 
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Update Date:</label>
+                                            <div class="input-group">                                
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                                </div>
+                                                <input type="text" name="fmodifica" id="fmodifica" size="12" maxlength="12" class="form-control w-50 text8l" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Creation Date:</label>
+                                            <div class="input-group">                                
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                                </div>
+                                                <input type="text" name="fingreso" id="fingreso" size="12" maxlength="12" class="form-control w-50 text8l" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>   
+                            </div>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+{% endblock %}
