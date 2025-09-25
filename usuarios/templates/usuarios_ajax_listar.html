@@ -4,11 +4,13 @@
         <thead >
             <tr>
                 <th width="10%" class="tdtit10">Username</th>
-                <th width="30%" class="tdtit10">Name</th>
-                <th width="20%" class="tdtit10">Email</th>                
+                <th width="20%" class="tdtit10">Name</th>
+                <th width="15%" class="tdtit10">Email</th>                
                 <th width="7%" class="tdtit10">Profile</th>
-                <th width="8%" class="tdtit10">Status</th>
+                <th width="10%" class="tdtit10">Country</th>
                 <th width="10%" class="tdtit10">Area</th>
+                <th width="8%" class="tdtit10">Status</th>
+                <th width="5%" class="tdtit10">Active<br />Type</th>
                 <th width="15%" class="tdtit10">Action</th>
             </tr>
         </thead>
@@ -19,8 +21,10 @@
                 <td class="text8l" id="nom{{persona.id}}">{{persona.apellidos}} , {{persona.nombres}} </td>
                 <td class="text8l" id="ema{{persona.id}}">{{persona.email}}</td>
                 <td class="text8c" id="per{{persona.id}}">{{persona.get_perfil_display}}</td>
+                <td class="text8c" id="pai{{persona.id}}">{{persona.pais.nombre}}</td>
+                <td class="text8c" id="pai{{persona.id}}">{{persona.pais.nombre}}</td>
                 <td class="text8c" id="est{{persona.id}}">{{persona.get_estado_display}}</td>
-                <td class="text8c" id="act{{persona.id}}">{{persona.pais.nombre}}</td>
+                <td class="text8c" id="tac{{persona.id}}">{{persona.get_tipoactivo_display}}</td>
                 <td class="text8c"> 
                 {% if request.user.is_superuser %}
                     <button class='btn btn-sm btn-outline-success tip' title='View User' onClick='VerRegistro({{persona.id|stringformat:"d"}})'>
@@ -33,11 +37,11 @@
                         <i class='bi-solid bi-pass'></i>
                     </button>
                     {% if persona.estado == "0" %}
-                            <button class='btn btn-sm btn-outline-primary tip' title='Unlock User' onClick='DesBloquearRegistro({{persona.id}})'>
+                            <button class='btn btn-sm btn-outline-primary tip' title='Enable User' onClick='DesBloquearRegistro({{persona.id}})'>
                                 <i class='bi bi-unlock'></i>
                             </button>
                     {% else %}
-                            <button class='btn btn-sm btn-outline-primary tip' title='Lock User' onClick='BloquearRegistro({{persona.id}})'>
+                            <button class='btn btn-sm btn-outline-primary tip' title='Disable User' onClick='BloquearRegistro({{persona.id}})'>
                                 <i class='bi bi-lock'></i>
                             </button>
                     {% endif %}

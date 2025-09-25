@@ -37,7 +37,8 @@ def ayuda(request):
 def test(request):
     return render(request, 'test.html')
 
-
+def en_desarrollo(request):
+    return render(request, '204.html')
 
 @login_required(login_url='/login')
 def activos(request):
@@ -59,12 +60,39 @@ def activos(request):
         zonas = Zonas.objects.all().order_by('nombre')
         usuariosinv = UsuariosInventario.objects.all().order_by('nombre')
         activos = Activos.objects.order_by('identificador')
-        return render(request, f'activos_listar.html', {'activos': activos,'owners': owners,'edificios': edificios,'ciudades': ciudades,'paises': paises,
+        return render(request,'activos_listar.html', {'activos': activos,'owners': owners,'edificios': edificios,'ciudades': ciudades,'paises': paises,
                                                         'locations': locations,'tiposactivos': tiposactivos,'estados': estados,'modelos': modelos,
                                                         'fabricantes': fabricantes,'nombresactivos': nombresactivos,'proveedores': proveedores,'zonas': zonas,
                                                         'usuariosinv': usuariosinv,'contabilizados': contabilizados})
     else:
         return render(request, '404.html')    
+
+
+@login_required(login_url='/login')
+def checkactiveid(request):
+    context = {}
+    context['status'] = 0
+    context['message'] = ""
+    
+    if (request.method == 'POST'):
+        identificador = request.POST.get('identificador')
+        try:
+            Activos.objects.get(identificador=identificador)
+        except Activos.DoesNotExist:
+            context['status'] = 404 
+            context['message'] = f'Asset Identifier Available!!'
+        except Exception as e: 
+            context['status'] = 500 
+            context['message'] = f'Error: {e}'
+        else:
+            context['status'] = 200 
+            context['message'] = f'Asset Identifier Not Available!!'       
+    else:
+        context['status'] = 500 
+        context['message'] = f'Access Error'
+    return JsonResponse({
+        'context': context,
+        })
 
 
 @login_required(login_url='/login')
@@ -90,6 +118,7 @@ def leeractivo(request):
             registro['nombre'] = activo.nombre_id
             registro['modelo'] = activo.modelo_id
             registro['fabricante'] = activo.fabricante_id
+            registro['sku'] = activo.sku
             registro['detalle'] = activo.detalle
             registro['serial'] = activo.serial
             registro['proveedor'] = activo.proveedor_id
@@ -133,6 +162,7 @@ def modificaractivo(request):
         nombre = request.POST.get('nombre')
         modelo = request.POST.get('modelo')
         fabricante = request.POST.get('fabricante')
+        sku = request.POST.get('sku')
         detalle = request.POST.get('detalle')
         serial = request.POST.get('serial')
         proveedor = request.POST.get('proveedor')
@@ -162,7 +192,7 @@ def modificaractivo(request):
                 Activos.objects.create(tipo=tipo,identificador=identificador,nombre_id=nombre,modelo_id=modelo,fabricante_id=fabricante,
                                        detalle=detalle,serial=serial,proveedor_id=proveedor,owner=owner,factura=factura,fcompra=fcompra,
                                        vcompra=vcompra,factivacion=factivacion,accounted=accounted,vactual=vactual,location=location,
-                                       building_id=building,floor=floor,zona_id=zona,city_id=city,country_id=country,
+                                       building_id=building,floor=floor,zona_id=zona,city_id=city,country_id=country,sku=sku,
                                        estado=estado,festado=festado,usuarioinv_id=usuarioinv)
             except Exception as e:
                 print('Accion= ' + accion + ' Error= '+str(e))
@@ -171,7 +201,7 @@ def modificaractivo(request):
                 Activos.objects.filter(id=id).update(tipo=tipo,identificador=identificador,nombre_id=nombre,modelo_id=modelo,fabricante_id=fabricante,
                                        detalle=detalle,serial=serial,proveedor_id=proveedor,owner=owner,factura=factura,fcompra=fcompra,
                                        vcompra=vcompra,factivacion=factivacion,accounted=accounted,vactual=vactual,location=location,
-                                       building_id=building,floor=floor,zona_id=zona,city_id=city,country_id=country,
+                                       building_id=building,floor=floor,zona_id=zona,city_id=city,country_id=country,sku=sku,
                                        estado=estado,festado=festado,usuarioinv_id=usuarioinv)
             except Exception as e:
                 print('Accion= ' + accion + ' Error= '+str(e))                

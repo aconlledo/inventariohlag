@@ -72,90 +72,11 @@ $(document).ready(function(){
 //          Funciones
 // ********************************
 //
-// Funciones relacionadas con lista de telefonos
-//
-
-function CrearListaFono(campofono) { 
-	const fono = document.querySelector(campofono);
-
-	const iti = window.intlTelInput(fono, {
-		initialCountry: "auto", 
-		geoIpLookup: function (callback) {
-		fetch('https://ipinfo.io/json?token=184b70b2b3b7b5') 
-			.then(response => response.json())
-			.then(data => {
-				const countryCode = data.country || "cl";
-				callback(countryCode);
-				})
-			.catch(() => callback("cl"));
-		},
-		preferredCountries: ["cl", "ar", "pe", "co", "br"], 
-		utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
-		});
-		
-	$(campofono).on('input', function () {
-		limpiarInputTelefono(this);
-	});
-	
-	$(campofono).on('blur', function () {
-		validarTelefono(this,campofono,iti); 	
-		});
-	}
-
-function limpiarInputTelefono(campo) {
-	campo.value = campo.value.replace(/[^\d+]/g, '');
-	if (campo.value.indexOf('+') > 0) {
-		campo.value = campo.value.replace(/\+/g, '');
-		}
-	};
-
-function validarTelefono(campo,nombrecampo,iti) {
-    const numero = iti.getNumber(); // ejemplo: +56912345678
-	const pais = iti.getSelectedCountryData().iso2;
-	const inputRef = campo;
-    let valido = iti.isValidNumber();
-	const $errorDiv = $(nombrecampo+'-error');
-	
-	if (pais === "cl") {
-		const soloNumeros = numero.replace('+56', '');
-		if (!/^\d{9}$/.test(soloNumeros)) {
-			valido = false;
-			}
-	  	}
-	if (valido) 
-		$errorDiv.hide();
-	else {
-		$errorDiv.show();
-		setTimeout(() => inputRef.focus(), 10); // Volver a enfocar
-		}
-	$(campo).val(iti.getNumber());
-	};
-//
 //
 function limpiarPesos(valor) {
 	return valor.replace(/\$/g, '').replace(/\./g, '').trim();
 	}
 //
-//
-function horaEnServidor() {
-
-	$.ajax({
-		url: "/usuarios/hora_servidor",
-		data: {},
-		type: 'GET',
-		dataType: 'JSON',
-		success: function(data) {
-			let horaServidor = data.hora_servidor;
-			let horaServidorFormato = horaServidor.split(" ")[1].substring(0,5); 
-			return (horaServidorFormato);
-			},
-		error: function(jqXHR, textStatus, errorThrown) {
-			MensajeErrorDesconocido('There was a problem with the request: ERROR(1)', textStatus, errorThrown);
-			}
-		});
-
-	} 
-
 function fluidDialog() {
     var $visible = $(".ui-dialog:visible");
     $visible.each(function () {
@@ -179,10 +100,6 @@ function fluidDialog() {
             dialog.option("position", dialog.options.position);
         	}	
     	});
-	}
-
-function limpiarNombreArchivo(nombreArchivo) {
-	return nombreArchivo.replace(/[^a-zA-Z0-9.]/g, ''); // Mantiene letras, números y puntos
 	}
 
 
@@ -231,11 +148,6 @@ function validarFechas(finicio,ffin) {
 	return true;
 	}
 
-function fechaEnCastellano(fecha) {
-	var partes = fecha.split('-'); // Dividimos la fecha en partes
-	return `${partes[2]}-${partes[1]}-${partes[0]}`; // Reorganizamos a dd-mm-YYYY
-	}
-
 function sumaDiasFecha(pfecha,pdias) {
 	let fecha = new Date(pfecha);
 	fecha.setDate(fecha.getDate() + pdias);
@@ -254,28 +166,18 @@ function fechaHoySql() {
 	return formattedDate
 	}
 
-function getMonday(d) {
-	d = new Date(d);
-	let day = d.getDay(),
-		diff = d.getDate() - day + (day == 0 ? -6 : 1); // Ajusta cuando es domingo
-	return new Date(d.setDate(diff));
+function fechadehoy(formato='ES') {
+    let hoy = new Date();
+    let dia = String(hoy.getDate()).padStart(2, '0');      // 01-31
+    let mes = String(hoy.getMonth() + 1).padStart(2, '0'); // 01-12
+    let anio = hoy.getFullYear();                          // 2025
+
+	if (formato=='ES') 
+		var fechaHoy = dia + "-" + mes + "-" + anio;
+	else	
+		var fechaHoy = anio + "-" + mes + "-" + dia;
+	return fechaHoy;
 	}
-//
-// Función para formatear la fecha (YYYY-MM-DD)
-//
-function formatDate(date) {
-	let d = new Date(date),
-		month = '' + (d.getMonth() + 1),
-		day = '' + d.getDate(),
-		year = d.getFullYear();
-
-	if (month.length < 2) month = '0' + month;
-	if (day.length < 2) day = '0' + day;
-
-	return [year, month, day].join('-');
-	}
-
-	var fechaOriginal = "17-12-2024";
 
 function fecha_str_to_sql(fecha) {
 	var partes = fecha.split("-");
@@ -405,12 +307,11 @@ function textvalida(e,obj) {
 function validarCorreo(correo) {
 	var expresion = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	
-	if (expresion.test(correo)) {
+	if (expresion.test(correo)) 
 		return true;
-		} 
-	else {
+	else 
 		return false;
-		}
+	
 	}
 
 function MensajeErrorDesconocido(p) {

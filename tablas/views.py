@@ -72,7 +72,7 @@ def ciudades(request):
 def selectciudades(request):
     if (request.method == 'POST'):
         pais = request.POST.get('pais')
-        ciudades = Modelos.objects.filter(fabricante_id=pais).order_by('nombre')
+        ciudades = Modelos.objects.filter(pais_id=pais).order_by('nombre')
         return render(request, 'ciudades_select.html', {'ciudades': ciudades}) 
     else:
         return render(request, '404.html')

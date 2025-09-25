@@ -1,0 +1,23 @@
+# Ignorar archivos txt
+# *.txt
+
+# Ignorar todos los archivos .pyc
+*.pyc
+
+# Ignorar el directorio "docs"
+docs/*
+
+# Ignorar todos los archivos y directorios dentro de "temp"
+temp/*
+
+# Ignorar todos los archivos y directorios dentro de "media"
+media/*
+
+migrations/*
+
+inventariohlag/__pycache__/*
+tablas/__pycache__/*
+usuarios/__pycache__/*
+__pycache__/*
+
+.env*

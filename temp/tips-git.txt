@@ -1,3 +1,8 @@
+gituhub.com
+aconlledo@vilco.cl
+Rocko.5862.
+
+
 
 iniciar Git: Crea staging area y repositorio local
 ==================================================
@@ -13,14 +18,14 @@ git push origin main --force
 
 Traslada archivos desde staging area al repositorio local
 =========================================================
-git commit -m "Version20250502"
+git commit -m "Version20250922"
 
 Usar rama main
 ================
 git branch -M main
 
 
-git remote add origin https://github.com/aconlledo/proximahora.git #Esto para la primera vez que se hace un commit
+git remote add origin https://github.com/aconlledo/inventariohlag.git #Esto para la primera vez que se hace un commit
 git push origin main
 
 git pull origin main

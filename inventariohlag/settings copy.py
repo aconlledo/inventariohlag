@@ -93,16 +93,14 @@ WSGI_APPLICATION = 'inventariohlag.wsgi.application'
 #    }
 #}
 
-from decouple import config
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': config("DB_NAME"),
-        'USER': config("DB_USER"),
-        'PASSWORD': config("DB_PASSWORD"),
-        'HOST': config("DB_HOST", default="127.0.0.1"),
-        'PORT': config("DB_PORT", default="3306"),
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "hlagDB",
+        "USER": "hlaguser",
+        "PASSWORD": "hlaguser.2025.",
+        "HOST": "172.29.1.77",
+        "PORT": "3306",
     }
 }
 

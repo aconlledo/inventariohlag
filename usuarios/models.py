@@ -4,12 +4,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 from tablas.models import Paises, TiposActivos
+from inventariohlag.models import Areas
 
 class PerfilesUsuarios:
     USUARIO = '0'
     ADMINISTRADOR = '1'
     PERFILES_USUARIOS = [
-        (USUARIO, 'HLAG PEOPLE'),
+        (USUARIO, 'NORMAL USER'),
         (ADMINISTRADOR, 'ADMINISTRADOR'),
         ]
  
@@ -37,10 +38,11 @@ class UsuariosPersonas(models.Model):
     cclave = models.PositiveSmallIntegerField(default=1)  
     token = models.CharField(max_length=64,blank=True,null=True)     
     pais = models.ForeignKey(Paises, on_delete=models.SET_NULL,blank=True,null=True) 
+    area = models.ForeignKey(Areas, on_delete=models.SET_NULL,blank=True,null=True) 
     usuario = models.OneToOneField(User,on_delete=models.CASCADE,blank=True,null=True)
-    
+     
     class Meta:
         db_table = "usuarios_personas"        
         ordering = ['username','nombres','apellidos','email','pais','estado','perfil','cclave','pais','usuario','tipoactivo']  
- 
- 
+        ordering = ['username','nombres','apellidos','email','estado','perfil','tipoactivo','cclave','token','pais','area','usuario']  
+

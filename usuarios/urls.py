@@ -15,5 +15,6 @@ urlpatterns = [
     path('ver_persona/', views.ver_persona, name='ver_persona'),            
     path('cambiar_estado/', views.cambiar_estado, name='cambiar_estado'),      
     path('admin_cambia_password/', views.admin_cambia_password, name='admin_cambia_password'),    
-        
+    path('checkactiveusername/', views.checkactiveusername, name='checkactiveusername'),    
+            
     ]

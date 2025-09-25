@@ -45,9 +45,9 @@ $(document).ready(function(){
 function PrepararRegistro(id){
     $('#id').val(allTrim($('#id'+id).html()));
     $('#nombre').val(allTrim($('#nom'+id).html()));
-    $('#codigo').val($('#iso'+id).val());
+    $('#codigo').val($('#iso'+id).html());
     $('#pais').val($('#paisid'+id).val());
-    };
+    }; 
 
 function CamposValidos(){
     var nombre = allTrim($('#nombre').val());

@@ -62,9 +62,9 @@ class TablasSimples:
     NOMBREAREAS = '4'
     TABLASSIMPLES = [
         (FABRICANTES, 'Manufacturers'),
-        (NOMBRESACTIVOS, 'Actives Names'),
+        (NOMBRESACTIVOS, 'Assets Names'),
         (PROVEEDORES, 'Providers'),
-        (USUARIOSINVENTARIO, 'Inventory Users'),
+        (USUARIOSINVENTARIO, 'Assets Users'),
         (ZONAS, 'Zones'),
         (NOMBREAREAS, 'Areas Names'),
         ]  

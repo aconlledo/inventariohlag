@@ -24,9 +24,11 @@ urlpatterns = [
     path('tablas/', include ('tablas.urls')),
     path('usuarios/', include ('usuarios.urls')),
     path('salir_plataforma/', views.salir_plataforma, name='salir_plataforma'),       
-    path('home_admin/', views.home_admin, name='home_admin'),     
+    path('home_admin/', views.home_admin, name='home_admin'),  
+    path('en_desarrollo/', views.en_desarrollo, name='en_desarrollo'),    
     path('activos/', views.activos, name='activos'),    
     path('leeractivo/', views.leeractivo, name='leeractivo'),  
+    path('checkactiveid/', views.checkactiveid, name='checkactiveid'),  
     path('modificaractivo/', views.modificaractivo, name='modificaractivo'), 
     path('areas_listar/', views.areas_listar, name='areas_listar'), 
          

@@ -1,7 +1,8 @@
 # 
 #  funciones.py
 #
-""" En este modulo se definen alguna funciones varias
+""" 
+    En este modulo se definen alguna funciones varias
 """
 import calendar
 import os

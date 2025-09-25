@@ -58,8 +58,9 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
                                     </div>
-                                    <input type="text" name="username" id="username" readonly class="form-control w-auto text8l"  />
+                                    <input type="text" name="username" id="username" readonly class="form-control w-auto text8l inputdata"  />
                                 </div>
+                                <div id="usernameMessage"></div>
                             </div>
                         </div>
                     </div>
@@ -71,7 +72,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
                                     </div>
-                                <input type="text" name="nombres" id="nombres" placeholder="First Name" size="100" maxlength="90" class="form-control w-75 ucword text8l" />
+                                <input type="text" name="nombres" id="nombres" placeholder="First Name" size="100" maxlength="90" class="form-control w-75 ucword text8l inputdata" />
                             </div>
                             </div>
                         </div>
@@ -84,7 +85,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
                                     </div> 
-                                    <input type="text" name="apellidos" id="apellidos" placeholder="Last Name" size="100" maxlength="90" class="form-control w-75 ucword text8l" />
+                                    <input type="text" name="apellidos" id="apellidos" placeholder="Last Name" size="100" maxlength="90" class="form-control w-75 ucword text8l inputdata" />
                                 </div>
                             </div>
                         </div>
@@ -97,24 +98,71 @@
                                      <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                                     </div>
-                                    <input type="text" name="email" id="email" placeholder="Email" size="100" maxlength="90" class="form-control w-75 text8l" />
+                                    <input type="text" name="email" id="email" placeholder="Email" size="100" maxlength="90" class="form-control w-75 text8l inputdata" />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="tit10lb">Country:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                    </div>
+                                    <select required="required" class="form-control w-auto inputselect" name="pais" id="pais" style="font-size:11px;">
+                                        {% for pais in paises %}
+                                            <option value="{{pais.id}}" class="text8l">{{pais.nombre}}</option>
+                                        {% endfor %}
+                                    </select>                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="tit10lb">Area:</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="bi bi-card-list"></i></span>
                                     </div>
-                                    <select required="required" class="form-control w-auto" name="pais" id="pais" style="font-size:11px;">
-                                        {% for pais in paises %}
-                                            <option value="{{pais.id}}" class="text8l">{{pais.nombre}}</option>
+                                  <select required="required" class="form-control w-auto inputselect" name="area" id="area" style="font-size:11px;">  
+                                    {% for area in areas %}
+                                        <option value="{{area.id}}" class="text8l">{{area.nombre}}</option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>   
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="tit10lb">Profile:</label>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                </div>
+                                <select required="required" class="form-control w-auto inputselect" name="perfil" id="perfil" style="font-size:11px;">
+                                    {% for code, name in perfiles %}
+                                        <option value="{{ code }}" class="text8l">{{ name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="tit10lb">Active Type:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                    </div>
+                                    <select required="required" class="form-control w-auto inputselect" name="tipoactivo" id="tipoactivo" style="font-size:11px;">
+                                        {% for code, name in tiposactivos %}
+                                            <option value="{{ code }}" class="text8l">{{ name }}</option>
                                         {% endfor %}
-                                    </select>                    
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -125,7 +173,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="bi bi-card-list"></i></span>
                                     </div>
-                                    <select required="required" class="form-control w-auto" name="estado" id="estado" style="font-size:11px;">
+                                    <select required="required" class="form-control w-auto inputselect" name="estado" id="estado" style="font-size:11px;">
                                         {% for code, name in estados %}
                                             <option value="{{ code }}" class="text8l">{{ name }}</option>
                                         {% endfor %}
@@ -133,38 +181,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="tit10lb">Active Type:</label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="bi bi-card-list"></i></span>
-                                    </div>
-                                    <select required="required" class="form-control w-auto" name="tipoactivo" id="tipoactivo" style="font-size:11px;">
-                                        {% for code, name in tiposactivos %}
-                                            <option value="{{ code }}" class="text8l">{{ name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12 mx-auto">
-                                <div class="form-group">
-                                    <label class="tit10lb">Profile:</label>
-                                </div>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="bi bi-card-list"></i></span>
-                                    </div>
-                                    <select required="required" class="form-control w-auto" name="perfil" id="perfil" style="font-size:11px;">
-                                        {% for code, name in perfiles %}
-                                            <option value="{{ code }}" class="text8l">{{ name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>   
                     </div>
                 </div> 
             </div>

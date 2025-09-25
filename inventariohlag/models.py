@@ -10,6 +10,7 @@ class Activos(models.Model):
     nombre = models.ForeignKey(NombresActivos, on_delete=models.SET_NULL,blank=True,null=True)
     modelo = models.ForeignKey(Modelos, on_delete=models.SET_NULL,blank=True,null=True)
     fabricante = models.ForeignKey(Fabricantes, on_delete=models.SET_NULL,blank=True,null=True)
+    sku = models.CharField(max_length=45,blank=True,null=True)
     detalle = models.CharField(max_length=250,blank=True,null=True)
     serial = models.CharField(max_length=45,blank=True,null=True)
     proveedor = models.ForeignKey(Proveedores,on_delete=models.SET_NULL,blank=True,null=True)   
@@ -34,7 +35,7 @@ class Activos(models.Model):
 
     class Meta:
         db_table = "hlag_activos"  
-        ordering = ['tipo','identificador','nombre','modelo','fabricante','detalle','serial','proveedor','owner','factura','fcompra','vcompra',
+        ordering = ['tipo','identificador','nombre','modelo','fabricante','sku','detalle','serial','proveedor','owner','factura','fcompra','vcompra',
                     'factivacion','accounted','vactual','location','building','floor','zona','city','country','estado','festado','usuarioinv','fingreso','fmodifica']
 
     def __str__(self):

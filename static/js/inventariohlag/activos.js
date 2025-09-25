@@ -36,7 +36,7 @@ $(document).ready(function(){
     $("#diagedit").dialog({
         autoOpen: false,	 
         position: { my: "center", at: "center", of: window },
-        height: 600,
+        height: 750,
         width: 1300,
         resizable: false,
         modal: true,  
@@ -53,9 +53,21 @@ $(document).ready(function(){
             },
         close: function() {
             $("#id").val('');
+            $('#identificador').val('')
+            $('#activeidMessage').removeClass();
+		    $('#activeidMessage').html('');
             }
         });  
-         
+
+    $('#identificador').keyup(function () {
+        $('#activeidMessage').removeClass();
+		$('#activeidMessage').html('');
+		}) 
+
+    $('#country').on("change", function() {
+        CargarCiudades();
+		});	
+
     Crear_DataTable(); 
 
     });
@@ -64,30 +76,46 @@ $(document).ready(function(){
 //          Funciones
 // ********************************
 //
-function Cargar_Modelos() {
-    var fabricante = $('#fabricante option:selected').val();
-//    alert("Fabricante="+fabricante)
-    try {
-        $.ajax({
-            method: "POST",
-            dataType:"html",
-            url: "/tablas/selectmodelos/",
-            data: {fabricante: fabricante, csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()},
-            success: function( response ) {
-//                alert(response)
-                if (response != ""){
-                    $('#divmodelos').html('');
-                    $("#divmodelos").html(response);
-                    }
-                else
-                    mostrarMensaje("UNKNOW ERROR",MSG_WARNING);
-                }
-            });
-    } catch (error) {
-        MensajeErrorDesconocido(error);
-        }
-    };
+function identificadorBlurHandler() {
+    $('#identificador').val(allTrim($('#identificador').val()));
+    if ($('#identificador').val() == '')
+        return;
+    checkActiveId();
+    }
+       
+function BloquearInputs() {
+    $(".inputdata").prop("readonly", true).css("background-color", "#F0EAE9");
+    $(".inputtextarea, .inputselect").prop("disabled", true).css("background-color", "#F0EAE9");
+    }
 
+function checkActiveId(){
+    var identificador = $('#identificador').val();
+    $('#activeidMessage').removeClass();
+    $('#activeidMessage').html('');
+
+    $.ajax({
+        async: false,
+        type: 'POST',
+        dataType: "json",
+        url: "/checkactiveid/",
+        data: {identificador: identificador, csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()},
+        success: function( response ) {
+            var context = response.context;
+            if  (context.status == 200) {  // El campo Active Identifier (identificador) YA esta en uso 
+                $('#activeidMessage').addClass('Short');
+                $('#activeidMessage').html(context.message);
+                BloquearInputs();
+                CampoEnReadWrite('identificador');
+                }
+            else{ // El campo Active Identifier (identificador) NO esta en uso 
+                $('#activeidMessage').addClass('Good');
+                $('#activeidMessage').html(context.message);
+                $("input:not(#id):not(#fingreso):not(#fmodifica)").prop("readonly", false).css("background-color", "#FFFFFF");
+                $("textarea, select").prop("disabled", false).css("background-color", "#FFFFFF");
+                }
+            }
+        });
+    };
 
 function PrepararRegistro(id){
 
@@ -99,39 +127,40 @@ function PrepararRegistro(id){
             url: "/leeractivo/",
             data: {id: id, csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()},
             success: function( response ) {
-			var context = response.context
-			if  (context.status == 200) {
-				var activo = response.registro;
-                $('#id').val(activo.id);
-                $('#tipo').val(activo.tipo);
-                $('#identificador').val(activo.identificador);
-                $('#nombre').val(activo.nombre);
-                $('#modelo').val(activo.modelo);
-                $('#fabricante').val(activo.fabricante);
-                $('#detalle').val(activo.detalle);
-                $('#serial').val(activo.serial);
-                $('#proveedor').val(activo.proveedor);
-                $('#owner').val(activo.owner);
-                $('#factura').val(activo.factura);
-                $('#fcompra').val(activo.fcompra);
-                $('#vcompra').val(activo.vcompra);
-                $('#factivacion').val(activo.factivacion);
-                $('#accounted').val(activo.accounted);
-                $('#vactual').val(activo.vactual);
-                $('#location').val(activo.location);
-                $('#building').val(activo.building);
-                $('#floor').val(activo.floor);
-                $('#zona').val(activo.zona);
-                $('#city').val(activo.city);
-                $('#country').val(activo.country);
-                $('#estado').val(activo.estado);
-                $('#festado').val(activo.festado);
-                $('#usuarioinv').val(activo.usuarioinv);
-                $('#fingreso').val(activo.fingreso);
-                $('#fmodifica').val(activo.fmodifica);
-                }
-            else
-                mostrarMensaje(context.message,MSG_WARNING);
+                var context = response.context
+                if  (context.status == 200) {
+                    var activo = response.registro;
+                    $('#id').val(activo.id);
+                    $('#tipo').val(activo.tipo);
+                    $('#identificador').val(activo.identificador);
+                    $('#nombre').val(activo.nombre);
+                    $('#modelo').val(activo.modelo);
+                    $('#fabricante').val(activo.fabricante);
+                    $('#sku').val(activo.sku);
+                    $('#detalle').val(activo.detalle);
+                    $('#serial').val(activo.serial);
+                    $('#proveedor').val(activo.proveedor);
+                    $('#owner').val(activo.owner);
+                    $('#factura').val(activo.factura);
+                    $('#fcompra').val(activo.fcompra);
+                    $('#vcompra').val(activo.vcompra);
+                    $('#factivacion').val(activo.factivacion);
+                    $('#accounted').val(activo.accounted);
+                    $('#vactual').val(activo.vactual);
+                    $('#location').val(activo.location);
+                    $('#building').val(activo.building);
+                    $('#floor').val(activo.floor);
+                    $('#zona').val(activo.zona);
+                    $('#city').val(activo.city);
+                    $('#country').val(activo.country);
+                    $('#estado').val(activo.estado);
+                    $('#festado').val(activo.festado);
+                    $('#usuarioinv').val(activo.usuarioinv);
+                    $('#fingreso').val(activo.fingreso);
+                    $('#fmodifica').val(activo.fmodifica);
+                    }
+                else
+                    mostrarMensaje(context.message,MSG_WARNING);
                 }
             });
     } catch (error) {
@@ -149,13 +178,11 @@ function CamposValidos(){
     return true;
     }; 
     
+
 function VerRegistro(id){
-
-    $("input").prop("readonly", true);
-    $("input, textarea, select").prop("disabled", true)
-
+    BloquearInputs();
     PrepararRegistro(id);
-
+    $('#identificador').off('blur', identificadorBlurHandler);
     $("#diagedit").dialog({
         title: "View Asset",
         buttons: [
@@ -173,11 +200,14 @@ function VerRegistro(id){
 
 function EditarRegistro(id){
 
-    $("input").prop("readonly", false);
-    $("input, textarea, select").prop("disabled", false)
-    CampoEnReadOnly("id");
-    CampoEnReadOnly("fingreso");
-    CampoEnReadOnly("fmodifica");
+    $("input:not(#id):not(#identificador):not(#fingreso):not(#fmodifica)").prop("readonly", false).css("background-color", "#FFFFFF");
+    $("textarea, select").prop("disabled", false).css("background-color", "#FFFFFF");
+    $('#identificador').off('blur', identificadorBlurHandler);
+    CampoEnReadOnly('id');
+    CampoEnReadOnly('identificador');
+    CampoEnReadOnly('fingreso');
+    CampoEnReadOnly('fmodifica');
+
     PrepararRegistro(id);
 
     $("#diagedit").dialog({
@@ -213,17 +243,17 @@ function AgregarRegistro(){
     var festado = $("#festado")[0]._flatpickr;
     festado.setDate(new Date(), true);
 
-    $("input").prop("readonly", false);
-    $("input, textarea, select").prop("disabled", false)
-    CampoEnReadOnly("id");
-    CampoEnReadOnly("fingreso");
-    CampoEnReadOnly("fmodifica");
+    $('#identificador').on('blur', identificadorBlurHandler);
+    BloquearInputs();
+    $("#identificador").prop("readonly", false).css("background-color", "#FFFFFF");
+    
     $('#id').val('');
     $('#tipo').val('0');
     $('#identificador').val('');
     $('#nombre').val('');
     $('#modelo').val('');
     $('#fabricante').val('');
+    $('#sku').val('');
     $('#detalle').val('');
     $('#item').val('');
     $('#serial').val('');
@@ -238,9 +268,9 @@ function AgregarRegistro(){
     $('#floor').val('');
     $('#zona').val('1');
     $('#city').val('1');
-    $('#country').val('0');
+    $('#country').val('1');
     $('#estado').val('0');
-    $('#festado').val('');
+    $('#festado').val(fechadehoy());
     $('#usuarioinv').val('23');
     $('#fingreso').val('');
     $('#fmodifica').val('');
@@ -273,10 +303,9 @@ function AgregarRegistro(){
     
 function BorrarRegistro(id){
     
-    $("input").prop("readonly", true);
-    $("input, textarea, select").prop("disabled", true)
+    BloquearInputs();
     PrepararRegistro(id);
-
+    $('#identificador').off('blur', identificadorBlurHandler);
     $("#diagedit").dialog({
         title: "Delete Asset",
         buttons: [
@@ -346,11 +375,55 @@ function EnviaPeticionAjax(accion, id) {
         }
 }
 
+function Cargar_Modelos() {
+    var fabricante = $('#fabricante option:selected').val();
+
+    try {
+        $.ajax({
+            method: "POST",
+            dataType:"html",
+            url: "/tablas/selectmodelos/",
+            data: {fabricante: fabricante, csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()},
+            success: function( response ) {
+                if (response != ""){
+                    $('#divmodelos').html('');
+                    $("#divmodelos").html(response);
+                    }
+                else
+                    mostrarMensaje("UNKNOW ERROR",MSG_WARNING);
+                }
+            });
+    } catch (error) {
+        MensajeErrorDesconocido(error);
+        }
+    };
+
+function Cargar_Ciudades(seleccion) {
+    var pais = $('#country option:selected').val();
+    try {
+        $.ajax({
+            method: "POST",
+            dataType:"html",
+            url: "/tablas/selectciudades/",
+            data: {pais: pais, csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()},
+            success: function( response ) {
+                if (response != ""){
+                    $('#divciudades').html('');
+                    $("#divciudades").html(response);
+                    $('#ciudad').attr({id: 'city',name: 'city'});
+                    }
+                else
+                    mostrarMensaje("UNKNOWN ERROR<br />Change NOT made",MSG_WARNING);
+                }
+            });
+    } catch (error) {
+        MensajeErrorDesconocido(error);
+        }
+    };
 
 function Crear_DataTable() {
 
     $('#tablaregs').DataTable ({
-//        language: {url: '/static/js/datatables/datatables.es-CL.json'},
         destroy: true,
         paging: true,
         pagingType: 'full_numbers',

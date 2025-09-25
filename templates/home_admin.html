@@ -75,6 +75,7 @@
               </a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="/activos">Assets</a></li>
+                <li><a class="dropdown-item" href="/en_desarrollo">QR Codes</a></li>
                 <li><a class="dropdown-item" href="/areas_listar">Countries by Areas</a></li>
               </ul>
             </li>
@@ -83,8 +84,8 @@
                 Tables Maintenance
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/tablas/tablasimple/1">Actives Name</a></li>
-                <li><a class="dropdown-item" href="/tablas/tablasimple/3">Inventory Users</a></li>
+                <li><a class="dropdown-item" href="/tablas/tablasimple/1">Assets Names</a></li>
+                <li><a class="dropdown-item" href="/tablas/tablasimple/3">Assets Users</a></li>
                 <li><a class="dropdown-item" href="/tablas/tablasimple/4">Zones</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="/tablas/tablasimple/2">Providers</a></li>
@@ -110,6 +111,8 @@
                 My Account
               </a>
               <ul class="dropdown-menu">
+                <hr class="dropdown-divider">
+                <li><a class="dropdown-item" href="#">Usuario: {{ request.user.get_full_name }} </a></li>
                 <li><a class="dropdown-item" href="#" id="cambiarClaveLink">Password Change</a></li>
                 <li><a class="dropdown-item" href="/salir_plataforma">Logout</a></li>
                 <li>

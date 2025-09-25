@@ -13,6 +13,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render
 from .models import *
 from inventariohlag.funciones import *
+from tablas.models import NombresAreas
 
 @csrf_exempt
 def login_general(request):
@@ -251,8 +252,10 @@ def usuarios_listar(request):
         perfiles = PerfilesUsuarios.PERFILES_USUARIOS
         tiposactivos = TiposActivos.TIPOS
         paises = Paises.objects.all().order_by('nombre')
+        areas = NombresAreas.objects.all().order_by('nombre')
+        areas = NombresAreas.objects.all().order_by('nombre')
         personas = UsuariosPersonas.objects.all().order_by('id')
-        return render(request, 'usuarios_listar.html', {'personas': personas,'paises': paises,'estados': estados,'perfiles': perfiles,'tiposactivos': tiposactivos})
+        return render(request, 'usuarios_listar.html', {'personas':personas,'paises':paises,'estados':estados,'perfiles':perfiles,'tiposactivos':tiposactivos,'areas':areas})
     else:
         accion = request.POST.get('accion')
         id = request.POST.get('id')
@@ -261,19 +264,21 @@ def usuarios_listar(request):
         apellidos = request.POST.get('apellidos')
         email = request.POST.get('email')
         perfil = request.POST.get('perfil')
+        estado = request.POST.get('estado')
         pais = request.POST.get('pais')
         tipoactivo = request.POST.get('tipoactivo')
+        area = request.POST.get('area')
         if (accion == AccionesCrud.CREAR):
-            status, mensaje = crear_persona(username,nombres,apellidos,email,perfil,pais,tipoactivo)
+            status, mensaje = crear_persona(username,nombres,apellidos,email,perfil,pais,tipoactivo,area,estado)
             if (status != 200):
                 print(f'Status:{status}. Mensaje:{mensaje}')
         else:
-            modificar_persona(id,username,nombres,apellidos,email,perfil,pais,tipoactivo)
+            modificar_persona(id,username,nombres,apellidos,email,perfil,pais,tipoactivo,area,estado)
         personas = UsuariosPersonas.objects.all().order_by('id')
         return render(request, 'usuarios_ajax_listar.html', {'personas': personas})
 
 
-def crear_persona(username,nombres,apellidos,email,perfil,pais,tipoactivo): 
+def crear_persona(username,nombres,apellidos,email,perfil,pais,tipoactivo,area,estado): 
     '''
     Crea registro en tabla  usuarios_personas y en auth_user; generando un usuario registrado
     Usado solo dentro de phadmin.views.py 
@@ -288,13 +293,17 @@ def crear_persona(username,nombres,apellidos,email,perfil,pais,tipoactivo):
     else:
         es_admin = False
     try:
+        if (estado == EstadosPersonas.BLOQUEADO):
+            esta_activo = False
+        else:
+            esta_activo = True
         newpassword = generar_password(longitud=16)
-        nuevo_usuario = User.objects.create_user(username=username,first_name=nombres,last_name=apellidos,email=email,is_staff=True,is_active=True,is_superuser=es_admin)
+        nuevo_usuario = User.objects.create_user(username=username,first_name=nombres,last_name=apellidos,email=email,is_staff=True,is_active=esta_activo,is_superuser=es_admin)
         nuevo_usuario.set_password(newpassword)
         nuevo_usuario.save()
         userid = nuevo_usuario.id
         try:
-            UsuariosPersonas.objects.create(username=username,nombres=nombres,apellidos=apellidos,email=email,perfil=perfil,pais_id=pais,usuario_id=userid,tipoactivo=tipoactivo)
+            UsuariosPersonas.objects.create(username=username,nombres=nombres,apellidos=apellidos,email=email,perfil=perfil,pais_id=pais,usuario_id=userid,tipoactivo=tipoactivo,area=area,estado=estado)
             status , mensaje = mail_nueva_clave(nombres,apellidos,username,newpassword,email)
         except Exception as e:
             status = 400
@@ -307,7 +316,7 @@ def crear_persona(username,nombres,apellidos,email,perfil,pais,tipoactivo):
     return status, mensaje
 
 
-def modificar_persona(id,username,nombres,apellidos,email,perfil,pais,tipoactivo):
+def modificar_persona(id,username,nombres,apellidos,email,perfil,pais,tipoactivo,area,estado):
     '''
     Modifica registro en tablas usuarios_personas y auth_user;
     Usado solo dentro de phadmin.views.py
@@ -315,17 +324,22 @@ def modificar_persona(id,username,nombres,apellidos,email,perfil,pais,tipoactivo
     userid = UsuariosPersonas.objects.get(id=id).usuario.id
     try:
         UsuariosPersonas.objects.filter(id=id).update(username=username,nombres=nombres,apellidos=apellidos,email=email,
-                                                      perfil=perfil,pais=pais,tipoactivo=tipoactivo)
+                                                      perfil=perfil,pais=pais,tipoactivo=tipoactivo,area=area,estado=estado)
         try:
             if (perfil == PerfilesUsuarios.ADMINISTRADOR):
                 es_admin = True
             else:
                 es_admin = False
+            if (estado == EstadosPersonas.BLOQUEADO):
+                esta_activo = False
+            else:
+                esta_activo = True
             usuario = User.objects.get(id=userid)
             usuario.username = username
             usuario.first_name = nombres
             usuario.last_name = apellidos
             usuario.is_superuser = es_admin
+            usuario.is_active = esta_activo
             usuario.email = email
             usuario.save()
         except Exception as e:
@@ -346,8 +360,8 @@ def ver_persona(request):
         if id is not None:
             try:
                 persona = UsuariosPersonas.objects.get(id=id)
-                data = {'id': persona.id, 'username': persona.username, 'nombres': persona.nombres,'apellidos': persona.apellidos,
-                        'email': persona.email,'pais': persona.pais_id,'estado': persona.estado,'perfil': persona.perfil,'tipoactivo': persona.tipoactivo}
+                data = {'id': persona.id, 'username': persona.username, 'nombres': persona.nombres,'apellidos': persona.apellidos,'email': persona.email,
+                        'pais': persona.pais_id,'estado': persona.estado,'perfil': persona.perfil,'tipoactivo': persona.tipoactivo,'area': persona.area_id}
             except:
                 data = {}
         else:
@@ -421,3 +435,30 @@ def admin_cambia_password(request):
         context['status'] = 400
         context['message'] = f'{ErroresSYS.ErroresSYS[ErroresSYS.ERROR_ACCESO][1]}'
     return JsonResponse(context)
+
+
+@login_required(login_url='/login')
+def checkactiveusername(request):
+    context = {}
+    context['status'] = 0
+    context['message'] = ""
+    
+    if (request.method == 'POST'):
+        username = request.POST.get('username')
+        try:
+            UsuariosPersonas.objects.get(username=username)
+        except UsuariosPersonas.DoesNotExist:
+            context['status'] = 404 
+            context['message'] = f'Username Available!!'
+        except Exception as e: 
+            context['status'] = 500 
+            context['message'] = f'Error: {e}'
+        else:
+            context['status'] = 200 
+            context['message'] = f'Username Not Available!!'       
+    else:
+        context['status'] = 500 
+        context['message'] = f'Access Error'
+    return JsonResponse({
+        'context': context,
+        })
