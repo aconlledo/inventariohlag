@@ -27,7 +27,25 @@ class TiposActivos:
         (IT, 'IT'),
         (MO, 'MO'),
         ] 
-
+    
+    @classmethod
+    def get_choices(cls, include=None, exclude=None):
+        """
+        include: valor (str) o lista de valores a incluir (si se pasa, se ignoran los demás).
+        exclude: valor (str) o lista de valores a excluir.
+        """
+        choices = cls.TIPOS
+        if include is not None:
+            if not isinstance(include, (list, tuple)):
+                include = [include]
+            choices = [t for t in choices if t[0] in include]
+        if exclude is not None:
+            if not isinstance(exclude, (list, tuple)):
+                exclude = [exclude]
+            choices = [t for t in choices if t[0] not in exclude]
+        return choices
+ 
+ 
 class Accounted:
     NO = '0'
     YES = '1'

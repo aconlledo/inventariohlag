@@ -7,7 +7,7 @@
 {% block content %}
 
     <!-- Custom JS -->
-<script type="text/javascript" src="{% static 'js/inventariohlag/activos.js' %}"></script>  
+<script type="text/javascript" src="{% static 'js/inventariohlag/activos.min.js' %}"></script>  
 
 <div class="container mt-4">
 
@@ -56,18 +56,6 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="tit10lb">Active Identifier:</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
-                                                </div>
-                                                <input type="text" name="identificador" id="identificador" size="20" class="form-control w-50 text8l uppcase inputdata" />
-                                            </div>
-                                            <div id="activeidMessage"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
                                             <label class="tit10lb">Active Type:</label>
                                             <div class="input-group">                                
                                                 <div class="input-group-prepend">
@@ -80,6 +68,18 @@
                                                 </select>
                                             </div>
                                         </div> 
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Active Identifier:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
+                                                </div>
+                                                <input type="text" name="identificador" id="identificador" size="20" class="form-control w-50 text8l uppcase inputdata" />
+                                            </div>
+                                            <div id="activeidMessage"></div>
+                                        </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">

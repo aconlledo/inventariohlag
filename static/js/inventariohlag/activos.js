@@ -246,9 +246,8 @@ function AgregarRegistro(){
     $('#identificador').on('blur', identificadorBlurHandler);
     BloquearInputs();
     $("#identificador").prop("readonly", false).css("background-color", "#FFFFFF");
-    
+    $('#tipo').prop('selectedIndex', 0);
     $('#id').val('');
-    $('#tipo').val('0');
     $('#identificador').val('');
     $('#nombre').val('');
     $('#modelo').val('');

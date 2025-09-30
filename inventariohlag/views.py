@@ -42,12 +42,14 @@ def en_desarrollo(request):
 
 @login_required(login_url='/login')
 def activos(request):
+    from django.db.models import Q
 #    if not request.user.is_superuser:
 #        return render(request, '404.html')
     if (request.method == 'GET'):
+        persona = request.user.persona
         owners = Owners.OWNERS
         locations = Locations.LOCATIONS
-        tiposactivos = TiposActivos.TIPOS
+
         contabilizados = Accounted.ACCOUNTED
         estados = Estados.ESTADOS
         edificios =  Edificios.objects.all().order_by('nombre')
@@ -59,7 +61,21 @@ def activos(request):
         nombresactivos = NombresActivos.objects.all().order_by('nombre')
         zonas = Zonas.objects.all().order_by('nombre')
         usuariosinv = UsuariosInventario.objects.all().order_by('nombre')
-        activos = Activos.objects.order_by('identificador')
+        if (request.user.is_superuser):
+            if (persona.tipoactivo == TiposActivos.TODOS):
+                tiposactivos = TiposActivos.get_choices(exclude=TiposActivos.TODOS)
+                tipos_activos = [t[0] for t in TiposActivos.get_choices(exclude=TiposActivos.TODOS)]
+            else:
+                tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
+                tipos_activos = [t[0] for t in TiposActivos.get_choices(include=persona.tipoactivo)]
+            filtro = Q(tipo__in=tipos_activos)
+            activos = Activos.objects.filter(filtro).order_by('identificador')
+        else:
+            tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
+            paises_zona = Paises.objects.filter(areas__id=persona.area_id)
+            filtro = Q(country__in=paises_zona)
+            activos = Activos.objects.filter(filtro,tipo=persona.tipoactivo).order_by('identificador')
+#        print(str(activos.query))
         return render(request,'activos_listar.html', {'activos': activos,'owners': owners,'edificios': edificios,'ciudades': ciudades,'paises': paises,
                                                         'locations': locations,'tiposactivos': tiposactivos,'estados': estados,'modelos': modelos,
                                                         'fabricantes': fabricantes,'nombresactivos': nombresactivos,'proveedores': proveedores,'zonas': zonas,

@@ -65,55 +65,6 @@ class Activos(models.Model):
     def fecha_hora_fingreso(self):
         return self.fingreso.strftime("%d-%m-%Y %H:%M")  
         
-        
-
-        
-'''     
-
-
-class AdminPaises(models.Model):
-
-    pais = models.ForeignKey(Paises, on_delete=models.CASCADE,blank=True,null=True,related_name="as_pais")
-    paisadmin = models.ForeignKey(Paises, on_delete=models.CASCADE,blank=True,null=True,related_name="as_paisadmin")
-
-    class Meta:
-        db_table = "hlag_adminpaises"  
-        ordering = ['pais','paisadmin']
-
-    def __str__(self):
-        return self.pais.nombre if self.pais else "Sin país"
-    
-    def get_admin_paises(self):
-        """Devuelve todos los AdminPaises donde este país aparece como pais o paisadmin"""
-        return AdminPaises.objects.filter(
-            Q(pais=self) | Q(paisadmin=self)
-        )
-        
-    def get_paises_admin(self):
-        """Devuelve solo los paisadmin donde este país es 'pais' en AdminPaises"""
-        return Paises.objects.filter(
-            id__in=AdminPaises.objects.filter(pais=self).values_list("paisadmin_id", flat=True)
-        )
-        
-           
-Ejemplos de uso:
-
-1.-
-    pais = Paises.objects.get(id=1)
-
-    # trae todos los AdminPaises asociados
-    relaciones = pais.get_admin_paises()
-
-    for relacion in relaciones:
-        print(relacion.pais, relacion.paisadmin)
-
-2.-
-    pais = Paises.objects.get(id=1)
-    paises_admin = pais.get_paises_admin()
-
-    for pa in paises_admin:
-        print(pa.nombre)
-'''
 
 
 class Areas(models.Model):

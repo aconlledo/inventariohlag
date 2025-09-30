@@ -28,7 +28,7 @@ class UsuariosPersonas(models.Model):
     '''
     Tabla de registro de personas, Usuarios y clientes. 
     '''
-    username = models.CharField(max_length=20,blank=True,null=True) 
+    username = models.CharField(max_length=20,blank=True,null=True)  
     nombres = models.CharField(max_length=90,blank=True,null=True)  
     apellidos = models.CharField(max_length=90,blank=True,null=True)  
     email = models.CharField(max_length=90,blank=True,null=True)
@@ -39,10 +39,9 @@ class UsuariosPersonas(models.Model):
     token = models.CharField(max_length=64,blank=True,null=True)     
     pais = models.ForeignKey(Paises, on_delete=models.SET_NULL,blank=True,null=True) 
     area = models.ForeignKey(Areas, on_delete=models.SET_NULL,blank=True,null=True) 
-    usuario = models.OneToOneField(User,on_delete=models.CASCADE,blank=True,null=True)
+    usuario = models.OneToOneField(User,on_delete=models.CASCADE,blank=True,null=True,related_name="persona")
      
     class Meta:
         db_table = "usuarios_personas"        
-        ordering = ['username','nombres','apellidos','email','pais','estado','perfil','cclave','pais','usuario','tipoactivo']  
         ordering = ['username','nombres','apellidos','email','estado','perfil','tipoactivo','cclave','token','pais','area','usuario']  
 
