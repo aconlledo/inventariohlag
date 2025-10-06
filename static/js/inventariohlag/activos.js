@@ -347,7 +347,7 @@ function EnviaPeticionAjax(accion, id) {
     data.push({ name: "id", value: id });  // agrega el campo id manualmente   
     data.push({ name: "accion", value: accion });  // agrega el campo accion manualmente   
     data.push({ name: "csrfmiddlewaretoken", value: $("input[name=csrfmiddlewaretoken]").val() }); // agrega el token CSRF
-    alert("id="+id);
+
     try {
         $.ajax({
             async: false,
