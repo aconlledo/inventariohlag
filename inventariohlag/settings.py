@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-68r52w^85rj1#iv!(&($xy@3$w2dg2%j%@uj=9c7^wt!i-77q&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [ 'localhost', '127.0.0.1','130.61.217.13','assets.halg-cl.com']
+ALLOWED_HOSTS = [ 'localhost', '127.0.0.1','130.61.217.13','assets.hlag-cl.com']
 
 INTERNAL_IPS = [
     '127.0.0.1',
@@ -173,3 +173,9 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 LOGIN_URL = '/login/'
 
 LOGOUT_REDIRECT_URL = '/login/'
+
+SESSION_COOKIE_NAME = 'assest-hlag'
+
+SESSION_COOKIE_AGE = 1800
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

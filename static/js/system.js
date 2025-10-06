@@ -76,6 +76,15 @@ $(document).ready(function(){
 function limpiarPesos(valor) {
 	return valor.replace(/\$/g, '').replace(/\./g, '').trim();
 	}
+
+function mensajeWorking() {
+	$.LoadingOverlay("show", {
+		image       : "",
+		text        : "Working...",
+		fontawesome : "fas fa-spinner fa-spin"
+//		fontawesome : "fa-solid fa-circle-notch fa-spin"
+		});
+	}
 //
 function fluidDialog() {
     var $visible = $(".ui-dialog:visible");

@@ -15,24 +15,24 @@
     </title>
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/static/imagenes/icono.png">
-    <!-- Bootstrap -->
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Bootstrap 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-    <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
-    <!-- CSS 
-    <link rel='stylesheet' type='text/css' href="{% static 'css/style.css' %}" >-->
+    <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">--> 
+    <!-- CSS -->
     <link rel='stylesheet' type='text/css' href="{% static 'css/system.css' %}" >
     <link rel='stylesheet' type='text/css' href="{% static 'jquery/jquery-ui.min.css' %}" >
     <!-- datatables.min.css -->
     <link rel="stylesheet" type='text/css' href="{% static 'js/datatables/datatables.min.css' %}" />
-    <!-- Telefonos CSS -->   
-    <link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
     <!--Flatpicker CSS --> 
     <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/material_blue.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&family=Rubik+Dirt&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <!-- Javascript -->
     <!-- jQuery y jQueryUI -->
     <script type="text/javascript" src="{% static 'jquery/jquery-3.7.1.min.js' %}"></script>
@@ -41,11 +41,10 @@
     <script type="text/javascript" src="{% static 'js/datatables/datatables.min.js' %}"></script>
     <!-- JS -->
     <script type="text/javascript" src="{% static 'js/system.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/loadingoverlay.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/admin/home_admin.js' %}"></script>
     <!-- LiveValidation JS -->
     <script type="text/javascript" src="{% static 'js/livevalidation.min.js' %}"></script>
-    <!-- Telefonos JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     <!--Flatpickr JS -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script type="text/javascript" src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
@@ -74,7 +73,7 @@
                 Inventory
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/activos">Assets</a></li>
+                <li><a class="dropdown-item" id='viewassets' name='viewassets' href="/activos">Assets</a></li>
                 <li><a class="dropdown-item" href="/en_desarrollo">QR Codes</a></li>
                 <li><a class="dropdown-item" href="/areas_listar">Countries by Areas</a></li>
               </ul>
@@ -136,7 +135,7 @@
 
     {% include 'modal_cambio_clave.html' %}
 
-    {% include 'loader_msg_wait.html' %}
+<!--     {% include 'loader_msg_wait.html' %}  -->
 
   </main>
 

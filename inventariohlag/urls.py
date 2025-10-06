@@ -28,7 +28,7 @@ urlpatterns = [
     path('en_desarrollo/', views.en_desarrollo, name='en_desarrollo'),    
     path('activos/', views.activos, name='activos'),    
     path('leeractivo/', views.leeractivo, name='leeractivo'),  
-    path('checkactiveid/', views.checkactiveid, name='checkactiveid'),  
+    path('checklastid/', views.checklastid, name='checklastid'),  
     path('modificaractivo/', views.modificaractivo, name='modificaractivo'), 
     path('areas_listar/', views.areas_listar, name='areas_listar'), 
          

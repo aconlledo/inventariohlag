@@ -7,7 +7,7 @@
 {% block content %}
 
     <!-- Custom JS -->
-<script type="text/javascript" src="{% static 'js/inventariohlag/activos.min.js' %}"></script>  
+<script type="text/javascript" src="{% static 'js/inventariohlag/activos.js' %}"></script>  
 
 <div class="container mt-4">
 
@@ -76,7 +76,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
                                                 </div>
-                                                <input type="text" name="identificador" id="identificador" size="20" class="form-control w-50 text8l uppcase inputdata" />
+                                                <input type="text" name="newid" id="newid" size="20" class="form-control w-50 text8l uppcase inputdata" />
                                             </div>
                                             <div id="activeidMessage"></div>
                                         </div>
@@ -152,6 +152,19 @@
                                                         {% endfor %}
                                                     </select>
                                                 </div>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </div>  
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Description:</label>
+                                            <div class="input-group">                                
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi  bi-chat-left-text"></i></span>
+                                                </div>
+                                                <input type="text" name="detalle" id="detalle" size="120" maxlength="120" class="form-control w-50 text8l uppcase inputdata" />
                                             </div>
                                         </div> 
                                     </div>
@@ -261,21 +274,6 @@
                                     </div>
                                 </div>                                  
                                 <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label class="tit10lb">Location:</label>
-                                            <div class="input-group">                                
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
-                                                </div>
-                                                <select required="required" class="form-control w-auto inputselect" name="location" id="location" style="font-size:11px;">
-                                                    {% for indice, texto in locations %}
-                                                        <option value="{{ indice }}" class="text8l">{{ texto }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label class="tit10lb">Building:</label>

@@ -1,12 +1,12 @@
 from django.db import models
-from django.db.models import Q
+from django.db.models import Max
 from tablas.models import *
 
 
 class Activos(models.Model):
 
     tipo = models.CharField(max_length=1,choices=TiposActivos.TIPOS,default=TiposActivos.IT)          
-    identificador = models.CharField(max_length=45)
+    newid = models.IntegerField(default=1)
     nombre = models.ForeignKey(NombresActivos, on_delete=models.SET_NULL,blank=True,null=True)
     modelo = models.ForeignKey(Modelos, on_delete=models.SET_NULL,blank=True,null=True)
     fabricante = models.ForeignKey(Fabricantes, on_delete=models.SET_NULL,blank=True,null=True)
@@ -21,7 +21,6 @@ class Activos(models.Model):
     factivacion = models.DateField(blank=True,null=True)
     accounted = models.CharField(max_length=1,choices=Accounted.ACCOUNTED,default=Accounted.YES)  
     vactual = models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True)
-    location = models.CharField(max_length=1,choices=Locations.LOCATIONS,default=Locations.VAP)  
     building = models.ForeignKey(Edificios, on_delete=models.SET_NULL,blank=True,null=True)     
     floor = models.CharField(max_length=15,blank=True,null=True)
     zona = models.ForeignKey(Zonas, on_delete=models.SET_NULL,blank=True,null=True)
@@ -35,12 +34,18 @@ class Activos(models.Model):
 
     class Meta:
         db_table = "hlag_activos"  
-        ordering = ['tipo','identificador','nombre','modelo','fabricante','sku','detalle','serial','proveedor','owner','factura','fcompra','vcompra',
-                    'factivacion','accounted','vactual','location','building','floor','zona','city','country','estado','festado','usuarioinv','fingreso','fmodifica']
+        ordering = ['tipo','newid','nombre','modelo','fabricante','sku','detalle','serial','proveedor','owner','factura','fcompra','vcompra',
+                    'factivacion','accounted','vactual','building','floor','zona','city','country','estado','festado','usuarioinv','fingreso','fmodifica']
 
     def __str__(self):
         return (self.nombre)  
     
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.newid:
+            maximo = Activos.objects.filter(tipo=self.tipo).aggregate(Max('newid'))['newid__max']
+            self.newid = (maximo or 0) + 1
+        super().save(*args, **kwargs)
+         
     @property
     def fecha_fmodifica(self):
         return self.fmodifica.strftime("%d-%m-%Y")
@@ -64,7 +69,6 @@ class Activos(models.Model):
     @property
     def fecha_hora_fingreso(self):
         return self.fingreso.strftime("%d-%m-%Y %H:%M")  
-        
 
 
 class Areas(models.Model):

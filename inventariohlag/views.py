@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from inventariohlag.funciones import *
 from .models import *
 from tablas.models import *
-
+from django.db.models import Q
 
 def login(request):
     return render(request, 'login.html')
@@ -42,14 +42,12 @@ def en_desarrollo(request):
 
 @login_required(login_url='/login')
 def activos(request):
-    from django.db.models import Q
 #    if not request.user.is_superuser:
 #        return render(request, '404.html')
     if (request.method == 'GET'):
         persona = request.user.persona
         owners = Owners.OWNERS
         locations = Locations.LOCATIONS
-
         contabilizados = Accounted.ACCOUNTED
         estados = Estados.ESTADOS
         edificios =  Edificios.objects.all().order_by('nombre')
@@ -69,12 +67,12 @@ def activos(request):
                 tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
                 tipos_activos = [t[0] for t in TiposActivos.get_choices(include=persona.tipoactivo)]
             filtro = Q(tipo__in=tipos_activos)
-            activos = Activos.objects.filter(filtro).order_by('identificador')
+            activos = Activos.objects.filter(filtro).order_by('tipo','newid')
         else:
             tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
             paises_zona = Paises.objects.filter(areas__id=persona.area_id)
             filtro = Q(country__in=paises_zona)
-            activos = Activos.objects.filter(filtro,tipo=persona.tipoactivo).order_by('identificador')
+            activos = Activos.objects.filter(filtro,tipo=persona.tipoactivo).order_by('tipo','newid')
 #        print(str(activos.query))
         return render(request,'activos_listar.html', {'activos': activos,'owners': owners,'edificios': edificios,'ciudades': ciudades,'paises': paises,
                                                         'locations': locations,'tiposactivos': tiposactivos,'estados': estados,'modelos': modelos,
@@ -85,15 +83,38 @@ def activos(request):
 
 
 @login_required(login_url='/login')
+def checklastid(request):
+    context = {}
+    context['status'] = 500
+    context['newid'] = 0
+    
+    if (request.method == 'POST'):
+        tipo = request.POST.get('tipo')
+        context['status'] = 200
+        context['newid'] = siguiente_identificador(tipo)
+    return JsonResponse({
+        'context': context,
+        })
+
+
+def siguiente_identificador(tipo):
+    from django.db.models import Max
+    maximo = Activos.objects.filter(tipo=tipo).aggregate(Max('newid'))['newid__max']
+    if maximo is None:
+        return 1   # si no hay registros, empezar en 1
+    return maximo + 1
+
+
+@login_required(login_url='/login')
 def checkactiveid(request):
     context = {}
     context['status'] = 0
     context['message'] = ""
     
     if (request.method == 'POST'):
-        identificador = request.POST.get('identificador')
+        newid = request.POST.get('newid')
         try:
-            Activos.objects.get(identificador=identificador)
+            Activos.objects.get(newid=newid)
         except Activos.DoesNotExist:
             context['status'] = 404 
             context['message'] = f'Asset Identifier Available!!'
@@ -110,7 +131,6 @@ def checkactiveid(request):
         'context': context,
         })
 
-
 @login_required(login_url='/login')
 def leeractivo(request):
     context = {}
@@ -122,7 +142,7 @@ def leeractivo(request):
         try:
             activo = Activos.objects.get(id=id)
         except Activos.DoesNotExist:
-            context['status'] = 404 
+            context['status'] = 404  
             context['message'] = f'Error: Asset Not Available'
         except Exception as e: 
             context['status'] = 404 
@@ -130,7 +150,7 @@ def leeractivo(request):
         else:
             registro['id'] = activo.id
             registro['tipo'] = activo.tipo
-            registro['identificador'] = activo.identificador            
+            registro['newid'] = activo.newid            
             registro['nombre'] = activo.nombre_id
             registro['modelo'] = activo.modelo_id
             registro['fabricante'] = activo.fabricante_id
@@ -145,7 +165,6 @@ def leeractivo(request):
             registro['factivacion'] = fecha_sql_to_str(activo.factivacion)
             registro['accounted'] = activo.accounted
             registro['vactual'] = activo.vactual
-            registro['location'] = activo.location
             registro['building'] = activo.building_id
             registro['floor'] = activo.floor
             registro['zona'] = activo.zona_id
@@ -159,7 +178,7 @@ def leeractivo(request):
     else:
         context['status'] = 404 
         context['message'] = f'Access Error'
-#    print(registro,context) 
+    print(registro,context) 
     return JsonResponse({
         'context': context,
         'registro': registro,
@@ -173,8 +192,7 @@ def modificaractivo(request):
     if (request.method == 'POST'):
         accion = request.POST.get('accion')
         id = request.POST.get('id')
-        tipo = request.POST.get('tipo')
-        identificador = request.POST.get('identificador')            
+        tipo = request.POST.get('tipo')        
         nombre = request.POST.get('nombre')
         modelo = request.POST.get('modelo')
         fabricante = request.POST.get('fabricante')
@@ -189,7 +207,6 @@ def modificaractivo(request):
         factivacion = fecha_str_to_sql(request.POST.get('factivacion'))
         accounted = request.POST.get('accounted')
         vactual = request.POST.get('vactual')
-        location = request.POST.get('location')
         building = request.POST.get('building')
         floor = request.POST.get('floor')
         zona = request.POST.get('zona')
@@ -205,25 +222,35 @@ def modificaractivo(request):
                 print('Accion= ' + accion + ' Error= '+str(e))
         elif (accion == AccionesCrud.CREAR):
             try:
-                Activos.objects.create(tipo=tipo,identificador=identificador,nombre_id=nombre,modelo_id=modelo,fabricante_id=fabricante,
+                Activos.objects.create(tipo=tipo,nombre_id=nombre,modelo_id=modelo,fabricante_id=fabricante,
                                        detalle=detalle,serial=serial,proveedor_id=proveedor,owner=owner,factura=factura,fcompra=fcompra,
-                                       vcompra=vcompra,factivacion=factivacion,accounted=accounted,vactual=vactual,location=location,
+                                       vcompra=vcompra,factivacion=factivacion,accounted=accounted,vactual=vactual,
                                        building_id=building,floor=floor,zona_id=zona,city_id=city,country_id=country,sku=sku,
                                        estado=estado,festado=festado,usuarioinv_id=usuarioinv)
             except Exception as e:
                 print('Accion= ' + accion + ' Error= '+str(e))
         else:
             try:
-                Activos.objects.filter(id=id).update(tipo=tipo,identificador=identificador,nombre_id=nombre,modelo_id=modelo,fabricante_id=fabricante,
+                Activos.objects.filter(id=id).update(tipo=tipo,nombre_id=nombre,modelo_id=modelo,fabricante_id=fabricante,
                                        detalle=detalle,serial=serial,proveedor_id=proveedor,owner=owner,factura=factura,fcompra=fcompra,
-                                       vcompra=vcompra,factivacion=factivacion,accounted=accounted,vactual=vactual,location=location,
+                                       vcompra=vcompra,factivacion=factivacion,accounted=accounted,vactual=vactual,
                                        building_id=building,floor=floor,zona_id=zona,city_id=city,country_id=country,sku=sku,
                                        estado=estado,festado=festado,usuarioinv_id=usuarioinv)
             except Exception as e:
                 print('Accion= ' + accion + ' Error= '+str(e))                
-
-        activos = Activos.objects.order_by('identificador')
-        return render(request, f'activos_listar_ajax.html', {'activos': activos})
+        persona = request.user.persona
+        if (request.user.is_superuser):
+            if (persona.tipoactivo == TiposActivos.TODOS):
+                tipos_activos = [t[0] for t in TiposActivos.get_choices(exclude=TiposActivos.TODOS)]
+            else:
+                tipos_activos = [t[0] for t in TiposActivos.get_choices(include=persona.tipoactivo)]
+            filtro = Q(tipo__in=tipos_activos)
+            activos = Activos.objects.filter(filtro).order_by('tipo','newid')
+        else:
+            paises_zona = Paises.objects.filter(areas__id=persona.area_id)
+            filtro = Q(country__in=paises_zona)
+            activos = Activos.objects.filter(filtro,tipo=persona.tipoactivo).order_by('tipo','newid')           
+        return render(request, 'activos_ajax_listar.html', {'activos': activos})
     else:
         return render(request, '404.html')    
 

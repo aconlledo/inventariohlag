@@ -1,7 +1,9 @@
 $(document).ready(function(){
 
-   var f100 = new LiveValidation('identificador');
-   f100.add(Validate.Presence);   
+    var f100 = new LiveValidation('newid');
+    f100.add(Validate.Presence);   
+    var f101 = new LiveValidation('nombre');
+    f101.add(Validate.Presence);   
     //
     // Dialogo para Modificar Registro.
     //	
@@ -42,30 +44,34 @@ $(document).ready(function(){
         modal: true,  
         show: {
             effect: "blind",
-            duration: 1000
+            duration: 10
                 },
         hide: {
-            effect: "explode",
-            duration: 1000
+            effect: "blind",
+            duration: 5
                 },
         open: function() {
 
             },
         close: function() {
             $("#id").val('');
-            $('#identificador').val('')
+            $('#newid').val('')
             $('#activeidMessage').removeClass();
 		    $('#activeidMessage').html('');
             }
         });  
 
-    $('#identificador').keyup(function () {
+    $('#newid').keyup(function () {
         $('#activeidMessage').removeClass();
 		$('#activeidMessage').html('');
 		}) 
 
     $('#country').on("change", function() {
         CargarCiudades();
+		});	
+
+    $('#tipo').on('blur', function() {
+        tipoBlurHandler();
 		});	
 
     Crear_DataTable(); 
@@ -76,20 +82,14 @@ $(document).ready(function(){
 //          Funciones
 // ********************************
 //
-function identificadorBlurHandler() {
-    $('#identificador').val(allTrim($('#identificador').val()));
-    if ($('#identificador').val() == '')
-        return;
-    checkActiveId();
-    }
-       
+   
 function BloquearInputs() {
     $(".inputdata").prop("readonly", true).css("background-color", "#F0EAE9");
     $(".inputtextarea, .inputselect").prop("disabled", true).css("background-color", "#F0EAE9");
     }
 
-function checkActiveId(){
-    var identificador = $('#identificador').val();
+function tipoBlurHandler() {
+    var tipo = $('#tipo').val();
     $('#activeidMessage').removeClass();
     $('#activeidMessage').html('');
 
@@ -97,21 +97,15 @@ function checkActiveId(){
         async: false,
         type: 'POST',
         dataType: "json",
-        url: "/checkactiveid/",
-        data: {identificador: identificador, csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()},
+        url: "/checklastid/",
+        data: {tipo: tipo, csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()},
         success: function( response ) {
             var context = response.context;
-            if  (context.status == 200) {  // El campo Active Identifier (identificador) YA esta en uso 
-                $('#activeidMessage').addClass('Short');
-                $('#activeidMessage').html(context.message);
-                BloquearInputs();
-                CampoEnReadWrite('identificador');
+            if  (context.status == 200) { 
+                $('#newid').val(context.newid);
                 }
-            else{ // El campo Active Identifier (identificador) NO esta en uso 
-                $('#activeidMessage').addClass('Good');
-                $('#activeidMessage').html(context.message);
-                $("input:not(#id):not(#fingreso):not(#fmodifica)").prop("readonly", false).css("background-color", "#FFFFFF");
-                $("textarea, select").prop("disabled", false).css("background-color", "#FFFFFF");
+            else{ 
+		        MensajeErrorDesconocido(context.status);
                 }
             }
         });
@@ -132,7 +126,7 @@ function PrepararRegistro(id){
                     var activo = response.registro;
                     $('#id').val(activo.id);
                     $('#tipo').val(activo.tipo);
-                    $('#identificador').val(activo.identificador);
+                    $('#newid').val(activo.newid);
                     $('#nombre').val(activo.nombre);
                     $('#modelo').val(activo.modelo);
                     $('#fabricante').val(activo.fabricante);
@@ -147,7 +141,6 @@ function PrepararRegistro(id){
                     $('#factivacion').val(activo.factivacion);
                     $('#accounted').val(activo.accounted);
                     $('#vactual').val(activo.vactual);
-                    $('#location').val(activo.location);
                     $('#building').val(activo.building);
                     $('#floor').val(activo.floor);
                     $('#zona').val(activo.zona);
@@ -170,9 +163,9 @@ function PrepararRegistro(id){
     };
 
 function CamposValidos(){
-    var identificador = allTrim($('#identificador').val());
-    if (identificador == "") 	{
-        mostrarMensaje("Debe indicar Identificador",MSG_STOP);
+    var newid = allTrim($('#newid').val());
+    if (newid == "") 	{
+        mostrarMensaje("Must Indicate Active Identifier!!!",MSG_STOP);
         return false;
         }
     return true;
@@ -182,7 +175,7 @@ function CamposValidos(){
 function VerRegistro(id){
     BloquearInputs();
     PrepararRegistro(id);
-    $('#identificador').off('blur', identificadorBlurHandler);
+//    $('#newid').off('blur', newid);
     $("#diagedit").dialog({
         title: "View Asset",
         buttons: [
@@ -200,14 +193,13 @@ function VerRegistro(id){
 
 function EditarRegistro(id){
 
-    $("input:not(#id):not(#identificador):not(#fingreso):not(#fmodifica)").prop("readonly", false).css("background-color", "#FFFFFF");
-    $("textarea, select").prop("disabled", false).css("background-color", "#FFFFFF");
-    $('#identificador').off('blur', identificadorBlurHandler);
+    $("input").prop("readonly", false).css("background-color", "#FFFFFF");
+    $("textarea, select").prop("disabled", false).css("background-color", "#FFFFFF");;
     CampoEnReadOnly('id');
-    CampoEnReadOnly('identificador');
+    CampoEnReadOnly('tipo');
+    CampoEnReadOnly('newid');
     CampoEnReadOnly('fingreso');
     CampoEnReadOnly('fmodifica');
-
     PrepararRegistro(id);
 
     $("#diagedit").dialog({
@@ -217,8 +209,11 @@ function EditarRegistro(id){
                 text: "Save",
                 click: function() {
                     if (CamposValidos()) {
-                        EnviaPeticionAjax(EDITAR_REG,id);
                         $( this ).dialog("close");	
+                        mensajeWorking();
+                        setTimeout(function() {
+                            EnviaPeticionAjax(EDITAR_REG, id);
+                            }, 100); 
                         }
                     },
                 class:"ui-corner-all", style:"color:Green" 
@@ -232,7 +227,11 @@ function EditarRegistro(id){
             }
             ]
         });
+    $("#diagedit").on("dialogopen", function() {
+        $('#nombre').focus();
+        });
     $("#diagedit").dialog("open");
+
     };
 
 function AgregarRegistro(){
@@ -243,12 +242,14 @@ function AgregarRegistro(){
     var festado = $("#festado")[0]._flatpickr;
     festado.setDate(new Date(), true);
 
-    $('#identificador').on('blur', identificadorBlurHandler);
+//    $('#newid').on('blur', newid);
     BloquearInputs();
-    $("#identificador").prop("readonly", false).css("background-color", "#FFFFFF");
+    $("#nombre").prop("readonly", false).css("background-color", "#FFFFFF");
+    $("#tipo").prop("disabled", false).css("background-color", "#FFFFFF");
     $('#tipo').prop('selectedIndex', 0);
+
     $('#id').val('');
-    $('#identificador').val('');
+    $('#newid').val('');
     $('#nombre').val('');
     $('#modelo').val('');
     $('#fabricante').val('');
@@ -262,7 +263,6 @@ function AgregarRegistro(){
     $('#vcompra').val('');
     $('#accounted').val('1');
     $('#vactual').val('');
-    $('#location').val('1');
     $('#building').val('1');
     $('#floor').val('');
     $('#zona').val('1');
@@ -281,8 +281,11 @@ function AgregarRegistro(){
                 text: "Save",
                 click: function() {
                     if (CamposValidos()) {
-                        EnviaPeticionAjax(AGREGAR_REG,0);
-                        $( this ).dialog("close");
+                        $( this ).dialog("close");	
+                        mensajeWorking();
+                        setTimeout(function() {
+                            EnviaPeticionAjax(AGREGAR_REG, 0);
+                            }, 100);
                         }
                     },
                 class:"ui-corner-all", style:"color:Green" 
@@ -296,15 +299,18 @@ function AgregarRegistro(){
             },
         ]
         });
-
+    $("#diagedit").on("dialogopen", function() {
+        $('#tipo').focus();
+    });
     $("#diagedit").dialog("open");
+
     };
     
 function BorrarRegistro(id){
     
     BloquearInputs();
     PrepararRegistro(id);
-    $('#identificador').off('blur', identificadorBlurHandler);
+
     $("#diagedit").dialog({
         title: "Delete Asset",
         buttons: [
@@ -312,7 +318,7 @@ function BorrarRegistro(id){
                 text: "Delete",
                 click: function() {
                     $( this ).dialog("close");
-                    confirmarMensaje("El Activo será eliminado de la Base de Datos.",EnviaPeticionAjax,ELIMINAR_REG,id);
+                    confirmarMensaje("Asset wil be Deleted from Data Base.",EnviaPeticionAjax,ELIMINAR_REG,id);
                     },
                 class:"ui-corner-all", style:"color:Red" 
             },
@@ -338,7 +344,7 @@ function EnviaPeticionAjax(accion, id) {
         return { name: this.name || this.id, value: valor };  // usa name si existe, si no el id
         }).get();
 //    data = data.filter(item => item.name !== "id");
-//    data.push({ name: "id", value: id });  // agrega el campo id manualmente   
+    data.push({ name: "id", value: id });  // agrega el campo id manualmente   
     data.push({ name: "accion", value: accion });  // agrega el campo accion manualmente   
     data.push({ name: "csrfmiddlewaretoken", value: $("input[name=csrfmiddlewaretoken]").val() }); // agrega el token CSRF
     alert("id="+id);
@@ -350,19 +356,17 @@ function EnviaPeticionAjax(accion, id) {
             url: "/modificaractivo/",
             data: $.param(data),  // convierte a querystring
             beforeSend: function() {
-                $('#loader-msg-wait').show();
         	    },
             success: function (response) {
-                $('#loader-msg-wait').hide();
+                $.LoadingOverlay("hide");
                 if (response) {
-                    $("#datatablediv").html(response);
                     Crear_DataTable();
                     mostrarMensaje("Change made successfully", MSG_SUCCESS);
                 } else 
                     mostrarMensaje("UNKNOWN ERROR<br />Change NOT made", MSG_WARNING);
                 },
             error: function(jqXHR, textStatus, errorThrown) {
-                $('#loader-msg-wait').hide();
+                $.LoadingOverlay("hide");
                 let msg = jqXHR.responseJSON && jqXHR.responseJSON.message
                         ? jqXHR.responseJSON.message
                         : (errorThrown || textStatus);
@@ -428,7 +432,6 @@ function Crear_DataTable() {
         pagingType: 'full_numbers',
         bJQueryUI: true,
         iDisplayLength: 25,
-        order: [[1, 'asc']],
         columnDefs: [
             { orderable: false, targets: [7] },
             { searchable: false, targets: [0,7] }

@@ -29,7 +29,6 @@ $(document).ready(function(){
 	$("#lnkolvidoclave").click(function (e){ 
 		e.preventDefault();  
 		$("#userlost").val('');
-//		$("#btnenviarolvidoclave").prop('disabled', true);
 		$("#btnfinolvidoclave").hide();
 		limpiarMsgModaloClave(); 
 		$('#LoginModal').modal('hide');
@@ -128,10 +127,12 @@ function ConfirmaOlvidoClave() {
             csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()
         	},
         beforeSend: function() {
-            $('#loader-msg-wait').show();
+			mensajeWorking();
+//            $('#loader-msg-wait').show();
         	},
         success: function(response) {
-            $('#loader-msg-wait').hide();
+			$.LoadingOverlay("hide");
+//            $('#loader-msg-wait').hide();
             if (response.status === 200) {
                 mostrarModalOlvidoClave({
                     mensaje: "New Password Created: " + response.message,
@@ -163,9 +164,9 @@ function ConfirmaOlvidoClave() {
 function mostrarModalOlvidoClave(opciones) {
     $('#ModalOlvidoClave').modal('show');
     enviarMsgModaloClave(opciones.mensaje);
-    $("#btnenviarolvidoclave").toggle(opciones.botones.includes("enviar"));
-    $("#btncancelarolvidoclave").toggle(opciones.botones.includes("cancelar"));
-    $("#btnfinolvidoclave").toggle(opciones.botones.includes("fin"));
+    $("#btnenviarolvidoclave").toggle(opciones.botones.includes("send"));
+    $("#btncancelarolvidoclave").toggle(opciones.botones.includes("cancel"));
+    $("#btnfinolvidoclave").toggle(opciones.botones.includes("end"));
 
     if (opciones.temblar) {
         efectoTemblor($('#ModalOlvidoClave'));

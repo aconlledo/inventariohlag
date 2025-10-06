@@ -52,6 +52,7 @@ python manage.py shell
 django-admin --version
 django-admin startproject zc .
 
+https://gasparesganga.com/labs/jquery-loading-overlay/
 
 python manage.py startapp nombre-app 
 Tambien he visto django-admin startapp nombre-app 

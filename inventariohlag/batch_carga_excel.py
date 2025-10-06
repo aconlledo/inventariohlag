@@ -19,9 +19,18 @@ setup()
 # === Ruta del archivo Excel ===
 RUTA_ARCHIVO = os.path.join("..\data", "gestion_de_activos.xlsm")  
 
+from django.db.models import Max
 from tablas.models import *
 from inventariohlag.models import *
 from inventariohlag.funciones import *
+from django.db import connection
+
+def siguiente_identificador(tipo):
+    maximo = Activos.objects.filter(tipo=tipo).aggregate(Max('newid'))['newid__max']
+    print(connection.queries[-1]['sql'])
+    if maximo is None:
+        return 1 
+    return maximo + 1
 
 def importar_excel():
     if not os.path.exists(RUTA_ARCHIVO):
@@ -45,7 +54,7 @@ def importar_excel():
             desc3 = ''
         else: 
             desc3 = desc3.strip()
-        descrip = f'{desc1} {desc2} {desc3}' 
+        descrip = f'Oldid={aid}:  {desc1} {desc2} {desc3}' 
         if (manufacturer in (None, 'N/A','')):
             fabricanteid = None
         else:
@@ -111,10 +120,11 @@ def importar_excel():
                 buildingid = Edificios.objects.create(nombre=building,pais_id=countryid,ciudad_id=cityid).id                   
         accounted = '0' if accounted in (None, 'N/A') else '1'
         if (atype is None):   
-            atypeid = None
+            atypeid = 1
         else:
             atype = atype.strip()
             atypeid = next((i for i, (_, nombre) in enumerate(TiposActivos.TIPOS) if nombre == atype), None)
+            newid = siguiente_identificador(atypeid)
         if (aid is not None):   
             aid = aid.strip()
         if (specint is None):  
@@ -141,10 +151,10 @@ def importar_excel():
         pdate = fecha_str_to_sql(pdated)
         sdate = fecha_str_to_sql(sdated)
         try:
-            Activos.objects.create(tipo=atypeid,identificador=aid,nombre_id=nomactivoid,modelo_id=modeloid,fabricante_id=fabricanteid,detalle=descrip,
-                                    serial=serial,proveedor_id=provider,owner=ownerid,factura=invoice,fcompra=pdate,vcompra=pvalue,factivacion=adate,
-                                    accounted=accounted,vactual=uvalue,location=locationid,building_id=buildingid,floor=floor,zona_id=zonaid,city_id=cityid,country_id=countryid,
-                                    estado=statusid,festado=sdate,usuarioinv_id=usuarioid)  
+            Activos.objects.create(tipo=atypeid,newid=newid,nombre_id=nomactivoid,modelo_id=modeloid,fabricante_id=fabricanteid,detalle=descrip,
+                                serial=serial,proveedor_id=provider,owner=ownerid,factura=invoice,fcompra=pdate,vcompra=pvalue,factivacion=adate,
+                                accounted=accounted,vactual=uvalue,building_id=buildingid,floor=floor,zona_id=zonaid,city_id=cityid,country_id=countryid,
+                                estado=statusid,festado=sdate,usuarioinv_id=usuarioid)  
             total += 1        
             print(f"Fila {factual} Ingresada. {fila}")                     
         except Exception as e:
@@ -152,22 +162,7 @@ def importar_excel():
         factual += 1                     
     print(f"Se Ingresaron {total} filas.")
 
+
 if __name__ == "__main__":
     importar_excel()
 
-
-
-
-'''        if (pdated is None):   
-            pdate = None
-        else:
-            pdate = str(pdated) 
-            pdate = pdate.strip()
-            pdate = pdate[:10]
-        if (sdated is None):   
-            sdate = None
-        else:
-            sdate = str(sdated) 
-            sdate = sdate.strip()
-            sdate = sdate[:10]
-'''
