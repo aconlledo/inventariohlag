@@ -35,7 +35,7 @@ $(document).ready(function(){
         Cargar_Modelos();
         });
 
-    $("#diagedit").dialog({
+    $("#diagview").dialog({
         autoOpen: false,	 
         position: { my: "center", at: "center", of: window },
         height: 750,
@@ -60,30 +60,6 @@ $(document).ready(function(){
 		    $('#activeidMessage').html('');
             }
         });  
-
-    $("#viewqr").dialog({
-        autoOpen: false,	 
-        position: { my: "center", at: "center", of: window },
-        height: 550,
-        width: 750,
-        resizable: false,
-        modal: true,  
-        show: {
-            effect: "blind",
-            duration: 10
-                },
-        hide: {
-            effect: "blind",
-            duration: 10
-                },
-        open: function() {
-
-            },
-        close: function() {
-            $('#qrimg').attr('src', "#");
-            }
-        });  
-
 
     $('#newid').keyup(function () {
         $('#activeidMessage').removeClass();
@@ -111,43 +87,6 @@ function BloquearInputs() {
     $(".inputdata").prop("readonly", true).css("background-color", "#F0EAE9");
     $(".inputtextarea, .inputselect").prop("disabled", true).css("background-color", "#F0EAE9");
     }
-
-function VerQR(id) {
-
-    $("#viewqr").dialog({
-        title: "Asset QR Code",
-        buttons: [
-            {
-                text: "Exit",
-                click: function() {
-                    $( this ).dialog("close");
-                    },
-                class:"ui-corner-all", style:"color:Black" 
-            }
-            ]
-        });
-    $("#viewqr").dialog("open");
-
-    $.ajax({
-        async: false,
-        type: 'POST',
-        dataType: "json",
-        url: "/ver_qr/",
-        data: {id: id, csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()},
-        success: function(response) {
-            var context = response.context;
-            if  (context.status == 200) { 
-                $('#qrimg').attr('src', context.qr_url);
-            } else {
-                mostrarMensaje(context.message,2)
-            }
-        },
-        error: function() {
-            MensajeErrorDesconocido(context.status);
-        }
-    });
-}
-
 
 function tipoBlurHandler() {
     var tipo = $('#tipo').val();

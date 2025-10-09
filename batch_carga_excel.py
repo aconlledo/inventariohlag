@@ -2,10 +2,16 @@
 ################################################  START PROCESS  ################################################
 #   
 import os
-from django import setup
 import sys
-from openpyxl import load_workbook
 from pathlib import Path
+import shutil
+from django import setup
+from openpyxl import load_workbook
+from django.db.models import Max
+from tablas.models import *
+from inventariohlag.models import *
+from inventariohlag.funciones import *
+from django.db import connection
 
 BASE_DIR = Path(__file__).resolve().parent
 sys.path.append(str(BASE_DIR))
@@ -17,25 +23,65 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "inventariohlag.settings")
 setup()
 
 # === Ruta del archivo Excel ===
-RUTA_ARCHIVO = os.path.join("..\data", "gestion_de_activos.xlsm")  
+RUTA_ARCHIVO = os.path.join(".\data", "gestion_de_activos.xlsm")  
 
-from django.db.models import Max
-from tablas.models import *
-from inventariohlag.models import *
-from inventariohlag.funciones import *
-from django.db import connection
-
+def elimina_qr():
+    qr_dir = Path(BASE_DIR / "media" / "qrcodes")
+    if qr_dir.exists() and qr_dir.is_dir():
+        print(f"🧹 Eliminando contenido de la carpeta  {qr_dir}...")
+        for archivo in qr_dir.iterdir():
+            try:
+                if archivo.is_file():
+                    archivo.unlink()
+                elif archivo.is_dir():
+                    shutil.rmtree(archivo)
+            except Exception as e:
+                print(f"⚠️ No se pudo eliminar {archivo}: {e}")
+    else:
+        print(f"📁 La carpeta {qr_dir} no existe, se creará.")
+        qr_dir.mkdir(parents=True, exist_ok=True)
+        
+        
 def siguiente_identificador(tipo):
     maximo = Activos.objects.filter(tipo=tipo).aggregate(Max('newid'))['newid__max']
-    print(connection.queries[-1]['sql'])
+#    print(connection.queries[-1]['sql'])
     if maximo is None:
         return 1 
     return maximo + 1
+
 
 def importar_excel():
     if not os.path.exists(RUTA_ARCHIVO):
         print(f"Archivo no encontrado: {RUTA_ARCHIVO}")
         return
+    Activos.objects.all().delete()
+    with connection.cursor() as cursor:
+        cursor.execute("ALTER TABLE hlag_activos AUTO_INCREMENT = 1;")
+    Modelos.objects.all().delete()
+    with connection.cursor() as cursor:
+        cursor.execute("ALTER TABLE tablas_modelos AUTO_INCREMENT = 1;")
+    Fabricantes.objects.all().delete()
+    with connection.cursor() as cursor:
+        cursor.execute("ALTER TABLE tablas_fabricantes AUTO_INCREMENT = 1;")
+    NombresActivos.objects.all().delete()
+    with connection.cursor() as cursor:
+        cursor.execute("ALTER TABLE tablas_nombresactivos AUTO_INCREMENT = 1;")
+    Zonas.objects.all().delete()
+    with connection.cursor() as cursor:
+        cursor.execute("ALTER TABLE tablas_zonas AUTO_INCREMENT = 1;")
+    UsuariosInventario.objects.all().delete()
+    with connection.cursor() as cursor:
+        cursor.execute("ALTER TABLE tablas_usuariosinventario AUTO_INCREMENT = 1;")
+    Paises.objects.all().delete()
+    with connection.cursor() as cursor:
+        cursor.execute("ALTER TABLE tablas_paises AUTO_INCREMENT = 1;")
+    Ciudades.objects.all().delete()
+    with connection.cursor() as cursor:
+        cursor.execute("ALTER TABLE tablas_ciudades AUTO_INCREMENT = 1;")
+    Edificios.objects.all().delete()
+    with connection.cursor() as cursor:
+        cursor.execute("ALTER TABLE tablas_edificios AUTO_INCREMENT = 1;")   
+    elimina_qr()     
     total = 0
     factual = 3
     wb = load_workbook(filename=RUTA_ARCHIVO, data_only=True)
@@ -137,11 +183,11 @@ def importar_excel():
         else: 
             owner = owner.strip()
             ownerid = next((i for i, (_, nombre) in enumerate(Owners.OWNERS) if nombre == owner), None)
-        if (location is None):   
-            locationid = None
-        else:
-            location = location.strip()
-            locationid = next((i for i, (_, nombre) in enumerate(Locations.LOCATIONS) if nombre == location), None)
+##       if (location is None): Location no se usara   
+##            locationid = None
+##        else:
+##            location = location.strip()
+##            locationid = next((i for i, (_, nombre) in enumerate(Locations.LOCATIONS) if nombre == location), None)
         if (status is None):   
             statusid = None
         else:

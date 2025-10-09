@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-68r52w^85rj1#iv!(&($xy@3$w2dg2%j%@uj=9c7^wt!i-77q&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [ 'localhost', '127.0.0.1','130.61.217.13','assets.hlag-cl.com']
+ALLOWED_HOSTS = [ 'localhost', '127.0.0.1','130.61.217.13','assets.hlag-cl.com','172.29.1.103']
 
 INTERNAL_IPS = [
     '127.0.0.1',
@@ -141,6 +141,7 @@ DECIMAL_SEPARATOR = ","
 USE_THOUSAND_SEPARATOR = True
 THOUSAND_SEPARATOR = "."
 
+SITE_URL=config("SITE_URL")
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/

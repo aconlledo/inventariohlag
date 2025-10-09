@@ -30,6 +30,9 @@
                 <td class="text8c" id="ser{{activo.id}}">{{activo.serial}}</td>
                 <td class="text8c" id="buil{{activo.id}}">{{activo.country.nombre}}</td>
                 <td class="text8c"> 
+                    <button class='btn btn-sm btn-outline-success tip' title='View QR Code' onClick='VerQR({{activo.id|stringformat:"d"}})'>
+                        <i class="bi bi-qr-code"></i>
+                    </button> 
                     <button class='btn btn-sm btn-outline-success tip' title='View Asset' onClick='VerRegistro({{activo.id|stringformat:"d"}})'>
                         <i class='bi-solid bi-search'></i>
                     </button> 

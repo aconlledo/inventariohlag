@@ -1,6 +1,7 @@
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render,redirect
+from django.http import HttpResponse
+from django.core import signing, exceptions
 from django.contrib.auth import logout
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -8,6 +9,7 @@ from inventariohlag.funciones import *
 from .models import *
 from tablas.models import *
 from django.db.models import Q
+
 
 def login(request):
     return render(request, 'login.html')
@@ -47,7 +49,6 @@ def activos(request):
     if (request.method == 'GET'):
         persona = request.user.persona
         owners = Owners.OWNERS
-        locations = Locations.LOCATIONS
         contabilizados = Accounted.ACCOUNTED
         estados = Estados.ESTADOS
         edificios =  Edificios.objects.all().order_by('nombre')
@@ -75,9 +76,9 @@ def activos(request):
             activos = Activos.objects.filter(filtro,tipo=persona.tipoactivo).order_by('tipo','newid')
 #        print(str(activos.query))
         return render(request,'activos_listar.html', {'activos': activos,'owners': owners,'edificios': edificios,'ciudades': ciudades,'paises': paises,
-                                                        'locations': locations,'tiposactivos': tiposactivos,'estados': estados,'modelos': modelos,
-                                                        'fabricantes': fabricantes,'nombresactivos': nombresactivos,'proveedores': proveedores,'zonas': zonas,
-                                                        'usuariosinv': usuariosinv,'contabilizados': contabilizados})
+                                                    'tiposactivos': tiposactivos,'estados': estados,'modelos': modelos,
+                                                    'fabricantes': fabricantes,'nombresactivos': nombresactivos,'proveedores': proveedores,'zonas': zonas,
+                                                    'usuariosinv': usuariosinv,'contabilizados': contabilizados})
     else:
         return render(request, '404.html')    
 
@@ -104,32 +105,6 @@ def siguiente_identificador(tipo):
         return 1   # si no hay registros, empezar en 1
     return maximo + 1
 
-
-@login_required(login_url='/login')
-def checkactiveid(request):
-    context = {}
-    context['status'] = 0
-    context['message'] = ""
-    
-    if (request.method == 'POST'):
-        newid = request.POST.get('newid')
-        try:
-            Activos.objects.get(newid=newid)
-        except Activos.DoesNotExist:
-            context['status'] = 404 
-            context['message'] = f'Asset Identifier Available!!'
-        except Exception as e: 
-            context['status'] = 500 
-            context['message'] = f'Error: {e}'
-        else:
-            context['status'] = 200 
-            context['message'] = f'Asset Identifier Not Available!!'       
-    else:
-        context['status'] = 500 
-        context['message'] = f'Access Error'
-    return JsonResponse({
-        'context': context,
-        })
 
 @login_required(login_url='/login')
 def leeractivo(request):
@@ -178,7 +153,7 @@ def leeractivo(request):
     else:
         context['status'] = 404 
         context['message'] = f'Access Error'
-    print(registro,context) 
+#    print(registro,context) 
     return JsonResponse({
         'context': context,
         'registro': registro,
@@ -253,6 +228,47 @@ def modificaractivo(request):
         return render(request, 'activos_ajax_listar.html', {'activos': activos})
     else:
         return render(request, '404.html')    
+
+
+@login_required
+def detalle_activo_qr(request, token):
+    try:
+        # Decodifica el token (expira a los 10 minutos = 600 segundos)
+        data = signing.loads(token, max_age=600)
+        id = data['id']
+        activo = get_object_or_404(Activos, codigo=id)
+    except exceptions.SignatureExpired:
+        return HttpResponse("❌ QR Code Expired. Please try scanning a new code.", status=403)
+    except exceptions.BadSignature:
+        return HttpResponse("❌ Invalid QR Code.", status=403)
+    owners = Owners.OWNERS
+    contabilizados = Accounted.ACCOUNTED
+    estados = Estados.ESTADOS
+    tiposactivos = TiposActivos.get_choices(exclude=TiposActivos.TODOS)
+    return render(request, 'activos_detalle.html', {'activo': activo,'owners': owners,'tiposactivos': tiposactivos,'contabilizados': contabilizados,'estados': estados})
+
+
+@login_required(login_url='/login')
+def ver_qr(request):
+    context = {}
+    context['status'] = 500
+    context['qr_url'] = ""
+    context['message'] = ""
+    
+    if (request.method == 'POST'):
+        id = request.POST.get('id')
+        try:
+            activo = Activos.objects.get(id=id)
+        except Exception as e:
+            context['message'] = f"{e}"
+        else:
+            tipo = TiposActivos.TIPOS[int(activo.tipo)][1]
+            context['status'] = 200
+            context['qr_url'] = f"{settings.SITE_URL}{settings.MEDIA_URL}{activo.qr}"
+        print(context)
+    return JsonResponse({
+        'context': context,
+        })
 
 
 @login_required(login_url='/login')

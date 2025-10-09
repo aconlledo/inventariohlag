@@ -9,14 +9,6 @@ class Owners:
         (LEASE, 'LEASE'),
         (HLAGCL, 'HAPAG-LLOYD CHILE SPA'),
         ]  
-
-class Locations:
-    SCL = '0'
-    VAP = '1'
-    LOCATIONS = [
-        (SCL, 'SCL'),
-        (VAP, 'VAP'),
-        ] 
     
 class TiposActivos:
     TODOS = '0'
