@@ -39,7 +39,7 @@ git reset --hard <codigo-instantanea>  Restaura archivo (contrario a commit)
 
 https://github.com/essykings/django_teams
 git clone https://github.com/essykings/django_teams.git
-# pip install -r requirements.txt
+pip install -r requirements.txt
 pip freeze > requirements.txt
 
 …or create a new repository on the command line
