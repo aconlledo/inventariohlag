@@ -61,7 +61,7 @@ $(document).ready(function(){
             }
         });  
 
-    $("#viewqr").dialog({
+    $("#viewqr").dialog({ 
         autoOpen: false,	 
         position: { my: "center", at: "center", of: window },
         height: 550,
