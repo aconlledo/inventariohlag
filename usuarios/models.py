@@ -4,7 +4,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from tablas.models import Paises, TiposActivos
-from inventariohlag.models import Areas
+from tablas.models import NombresAreas
 
 class PerfilesUsuarios:
     USUARIO = '0'
@@ -38,7 +38,7 @@ class UsuariosPersonas(models.Model):
     cclave = models.PositiveSmallIntegerField(default=1)  
     token = models.CharField(max_length=64,blank=True,null=True)     
     pais = models.ForeignKey(Paises, on_delete=models.SET_NULL,blank=True,null=True) 
-    area = models.ForeignKey(Areas, on_delete=models.SET_NULL,blank=True,null=True) 
+    area = models.ForeignKey(NombresAreas, on_delete=models.SET_NULL,blank=True,null=True) 
     usuario = models.OneToOneField(User,on_delete=models.CASCADE,blank=True,null=True,related_name="persona")
      
     class Meta:

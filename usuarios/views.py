@@ -245,8 +245,8 @@ def usuarios_listar(request):
     Viene desde 1) via GET home_adm_base.html 
                 2) via POST ajax personas_listar.js en personas_listar.html. Retorna html
     '''
-    if not request.user.is_superuser:
-        return render(request, '404.html')
+#    if not request.user.is_superuser:
+#        return render(request, '404.html')
     if (request.method == 'GET'):
         estados = EstadosPersonas.ESTADOS_PERSONAS
         perfiles = PerfilesUsuarios.PERFILES_USUARIOS
@@ -254,7 +254,10 @@ def usuarios_listar(request):
         paises = Paises.objects.all().order_by('nombre')
         areas = NombresAreas.objects.all().order_by('nombre')
         areas = NombresAreas.objects.all().order_by('nombre')
-        personas = UsuariosPersonas.objects.all().order_by('id')
+        if request.user.is_superuser:
+            personas = UsuariosPersonas.objects.all().order_by('id')
+        else:
+            personas = UsuariosPersonas.objects.filter(id=request.user.persona.id).order_by('id')
         return render(request, 'usuarios_listar.html', {'personas':personas,'paises':paises,'estados':estados,'perfiles':perfiles,'tiposactivos':tiposactivos,'areas':areas})
     else:
         accion = request.POST.get('accion')
@@ -353,8 +356,8 @@ def ver_persona(request):
     '''
     Lee usuario en tabla usuarios_personas
     '''   
-    if not request.user.is_superuser:
-        return render(request, '404.html')
+#    if not request.user.is_superuser:
+#        return render(request, '404.html')
     if (request.method == 'POST'):
         id = request.POST.get('id')
         if id is not None:

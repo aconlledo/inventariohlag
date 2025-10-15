@@ -4,9 +4,6 @@ $(document).ready(function(){
     f100.add(Validate.Presence);   
     var f101 = new LiveValidation('nombre');
     f101.add(Validate.Presence);   
-    //
-    // Dialogo para Modificar Registro.
-    //	
 
     $("#fcompra").flatpickr({
 		enableTime: false,
@@ -34,7 +31,9 @@ $(document).ready(function(){
     $('#fabricante').on("change", function(){
         Cargar_Modelos();
         });
-
+//
+// Dialogo para Modificar Registro.
+//	
     $("#diagedit").dialog({
         autoOpen: false,	 
         position: { my: "center", at: "center", of: window },
@@ -65,7 +64,7 @@ $(document).ready(function(){
         autoOpen: false,	 
         position: { my: "center", at: "center", of: window },
         height: 550,
-        width: 750,
+        width: 700,
         resizable: false,
         modal: true,  
         show: {

@@ -122,6 +122,9 @@ class AccionesCrud:
         (ERROR, 'ERROR'),
         ]   
 
+
+def is_valid(value):
+    return value not in [None, '', 'null']
     
 def number_unformat(nump,formato=Constantes.ESPANOL):
     

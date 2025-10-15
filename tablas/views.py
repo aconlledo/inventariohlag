@@ -3,12 +3,12 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from inventariohlag.funciones import *
+from inventariohlag.models import Areas
 from .models import *
 
 @login_required(login_url='/login')
 def paises(request):
-#    if not request.user.is_superuser:
-#        return render(request, '404.html')
+    
     if (request.method == 'GET'):
         paises = Paises.objects.all().order_by('nombre')
         return render(request, 'paises_listar.html', {'paises': paises})
@@ -36,6 +36,18 @@ def paises(request):
         return render(request, 'paises_ajax_listar.html', {'paises': paises})
 
 
+@login_required(login_url='/login')
+def selectpaises(request):
+    if (request.method == 'GET'):
+        area = request.GET.get('area')
+        paises = Paises.objects.filter(
+            id__in=Areas.objects.filter(areaname_id=area).values_list('pais_id', flat=True)
+            ).order_by('nombre')
+        return render(request, 'paises_select.html', {'paises': paises}) 
+    else:
+        return render(request, '404.html')
+    
+    
 @login_required(login_url='/login')
 def ciudades(request):
 #    if not request.user.is_superuser:
@@ -72,7 +84,7 @@ def ciudades(request):
 def selectciudades(request):
     if (request.method == 'POST'):
         pais = request.POST.get('pais')
-        ciudades = Modelos.objects.filter(pais_id=pais).order_by('nombre')
+        ciudades = Ciudades.objects.filter(pais_id=pais).order_by('nombre')
         return render(request, 'ciudades_select.html', {'ciudades': ciudades}) 
     else:
         return render(request, '404.html')

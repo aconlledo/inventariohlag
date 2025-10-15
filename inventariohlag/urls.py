@@ -34,7 +34,9 @@ urlpatterns = [
     path('modificaractivo/', views.modificaractivo, name='modificaractivo'), 
     path('areas_listar/', views.areas_listar, name='areas_listar'), 
     path('activos/qr/<str:token>/', views.detalle_activo_qr, name='detalle_activo_qr'),         
-    path('ver_qr/', views.ver_qr, name='ver_qr'),     
+    path('qr_listar/', views.activos_qr_listar, name='activos_qr_listar'),     
+    path('qr_filtrar/', views.activos_qr_filtrar, name='activos_qr_filtrar'),     
+    path('ver_qr/', views.ver_qr, name='ver_qr'),    
     
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
 

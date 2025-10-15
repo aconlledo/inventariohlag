@@ -69,7 +69,7 @@ class TablasSimples:
     PROVEEDORES = '2'
     USUARIOSINVENTARIO = '3'
     ZONAS = '4'
-    NOMBREAREAS = '4'
+    NOMBREAREAS = '5'
     TABLASSIMPLES = [
         (FABRICANTES, 'Manufacturers'),
         (NOMBRESACTIVOS, 'Assets Names'),

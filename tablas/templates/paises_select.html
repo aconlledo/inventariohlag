@@ -1,0 +1,9 @@
+<select required="required" class="form-control w-auto inputselect" name="pais" id="pais" style="font-size:11px;">
+    {% for pais in paises %}
+        {% if request.user.persona.pais_id %}
+            <option value="{{ pais.id }}" class="text8l" selected>{{ pais.nombre }}</option>
+        {% else %}
+            <option value="{{ pais.id }}" class="text8l">{{ pais.nombre }}</option>
+        {% endif %}
+    {% endfor %}
+</select>

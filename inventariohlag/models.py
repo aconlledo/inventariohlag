@@ -95,15 +95,17 @@ class Activos(models.Model):
         qr.make(fit=True)
         qr_img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
         try:
-            font_bold_path = os.path.join(settings.BASE_DIR,"static/fonts/dejavu-sans-nold.ttf")
-            font_normal_path = os.path.join(settings.BASE_DIR,"static/fonts/dejavu-sans-regular.ttf")
-            font_bold = ImageFont.truetype(font_bold_path, 20)
-            font_normal = ImageFont.truetype(font_normal_path, 20)
+#            font_bold_path = os.path.join(settings.BASE_DIR,"static/fonts/dejavu-sans-nold.ttf")
+#            font_normal_path = os.path.join(settings.BASE_DIR,"static/fonts/dejavu-sans-regular.ttf")
+            font_bold_path = os.path.join(settings.BASE_DIR,"static/fonts/arialceb.ttf")
+            font_normal_path = os.path.join(settings.BASE_DIR,"static/fonts/arialce.ttf")
+            font_bold = ImageFont.truetype(font_bold_path, 16)
+            font_normal = ImageFont.truetype(font_normal_path, 16)
         except:
             font_bold = ImageFont.load_default()
             font_normal = ImageFont.load_default()
         qr_width, qr_height = qr_img.size
-        padding = 20
+        padding = 2
         text_width = 380
         total_width = qr_width + text_width + padding
         total_height = max(qr_height, 220)
@@ -113,14 +115,14 @@ class Activos(models.Model):
         x_text = qr_width + padding
         y = 180
         line_height = 20  # Espaciado entre líneas 
-        title_value_gap = 100  # Separación entre título y valor
+        title_value_gap = 80  # Separación entre título y valor
         tipo = TiposActivos.TIPOS[int(self.tipo)][1]
         identificador = f'{tipo}-{self.newid}'
         text_lines = [
-            ("Asset Type: ", tipo),
-            ("ID #:: ", identificador),
+            ("Type: ", tipo),
+            ("ID #: ", identificador),
             ("Name: ", self.nombre.nombre),
-            ("Serial Number: ", self.serial),
+            ("Serial: ", self.serial),
             ("City: ", self.city.nombre),
             ("Building: ", self.building.nombre),
             ]
@@ -129,9 +131,39 @@ class Activos(models.Model):
             draw.text((x_text + title_value_gap, y), value, font=font_normal, fill="black")
             y += line_height
         buffer = BytesIO()
-        combined.save(buffer, format="PNG")
+        combined.save(buffer, format="PNG", dpi=(150, 150))
         filename = f"qr_{identificador}.png"
         self.qr.save(filename, File(buffer), save=False)
+    
+    @property
+    def get_qr_html_data(self):
+        tipo = TiposActivos.TIPOS[int(self.tipo)][1]
+        return f"""
+        <div class='qr-info'>
+            <div class='text8l'><strong>ID #:</strong> {tipo}-{self.newid}</div>
+            <div class='text8l'><strong>Name:</strong> {self.nombre.nombre}</div>
+            <div class='text8l'><strong>Serial:</strong> {self.serial}</div>
+            <div class='text8l'><strong>City:</strong> {self.city.nombre}</div>
+            <div class='text8l'><strong>Building:</strong> {self.building.nombre}</div>
+        </div>
+        """
+        
+'''
+    def generar_qr(self):
+        # Genera un token firmado que incluye el código del activo
+        token = signing.dumps({'id': self.id})
+        # Construye la URL segura (ajústala según tu dominio)
+        url = f"{settings.SITE_URL}/activos/qr/{token}/"
+        # Crea el código QR con la URL
+        qr_img = qrcode.make(url)
+        # Guarda la imagen en memoria y luego en el campo
+        buffer = BytesIO()
+        qr_img.save(buffer, format='PNG')
+        tipo = TiposActivos.TIPOS[int(self.tipo)][1]
+        filename = f"qr-{tipo}-{self.newid}.png"
+        self.qr.save(filename, File(buffer), save=False)
+'''
+
 
 
 class Areas(models.Model):
@@ -143,11 +175,19 @@ class Areas(models.Model):
         db_table = "hlag_areas"  
         ordering = ['areaname','pais']
 
-    def __str__(self):
+    def __str__(self): 
         return self.areaname.nombre if self.pais else "Sin país"
     
     def get_area_paises(self):
         return Areas.objects.filter(
             id__in=Areas.objects.filter(areaname=self).values_list("pais_id", flat=True)
         )
-        
+       
+    @classmethod
+    def get_paises_por_areaid(cls, areaid):
+        """
+        Devuelve un QuerySet de todos los países asociados a un área específica
+        dado su area.id (que corresponde a areaname.id).
+        """
+        return Paises.objects.filter(areas__areaname_id=areaid).distinct().order_by('nombre') 
+

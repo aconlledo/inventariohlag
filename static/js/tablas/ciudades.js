@@ -10,7 +10,7 @@ $(document).ready(function(){
     $("#diagedit").dialog({
         autoOpen: false,	 
         position: { my: "center", at: "center", of: window },
-        height:400,
+        height:450,
         width: 500,
         resizable: false,
         modal: true,  

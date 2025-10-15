@@ -71,8 +71,8 @@ def activos(request):
             activos = Activos.objects.filter(filtro).order_by('tipo','newid')
         else:
             tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
-            paises_zona = Paises.objects.filter(areas__id=persona.area_id)
-            filtro = Q(country__in=paises_zona)
+            paises_areas = Paises.objects.filter(areas__id=persona.area_id)
+            filtro = Q(country__in=paises_areas)
             activos = Activos.objects.filter(filtro,tipo=persona.tipoactivo).order_by('tipo','newid')
 #        print(str(activos.query))
         return render(request,'activos_listar.html', {'activos': activos,'owners': owners,'edificios': edificios,'ciudades': ciudades,'paises': paises,
@@ -222,8 +222,8 @@ def modificaractivo(request):
             filtro = Q(tipo__in=tipos_activos)
             activos = Activos.objects.filter(filtro).order_by('tipo','newid')
         else:
-            paises_zona = Paises.objects.filter(areas__id=persona.area_id)
-            filtro = Q(country__in=paises_zona)
+            paises_areas = Paises.objects.filter(areas__id=persona.area_id)
+            filtro = Q(country__in=paises_areas)
             activos = Activos.objects.filter(filtro,tipo=persona.tipoactivo).order_by('tipo','newid')           
         return render(request, 'activos_ajax_listar.html', {'activos': activos})
     else:
@@ -238,9 +238,9 @@ def detalle_activo_qr(request, token):
         id = data['id']
         activo = get_object_or_404(Activos, codigo=id)
     except exceptions.SignatureExpired:
-        return HttpResponse("❌ QR Code Expired. Please try scanning a new code.", status=403)
+        return HttpResponse("QR Code Expired. Please try scanning a new code.", status=403)
     except exceptions.BadSignature:
-        return HttpResponse("❌ Invalid QR Code.", status=403)
+        return HttpResponse("Invalid QR Code.", status=403)
     owners = Owners.OWNERS
     contabilizados = Accounted.ACCOUNTED
     estados = Estados.ESTADOS
@@ -265,10 +265,56 @@ def ver_qr(request):
             tipo = TiposActivos.TIPOS[int(activo.tipo)][1]
             context['status'] = 200
             context['qr_url'] = f"{settings.SITE_URL}{settings.MEDIA_URL}{activo.qr}"
-        print(context)
+#        print(context)
     return JsonResponse({
         'context': context,
         })
+
+
+@login_required(login_url='/login')
+def activos_qr_filtrar(request):
+    
+    if (request.method == 'GET'):
+        persona = request.user.persona
+        areas = NombresAreas.objects.all().order_by('nombre')
+        paises = Paises.objects.filter(
+            id__in=Areas.objects.filter(areaname_id=persona.area_id).values_list('pais_id', flat=True)
+            ).order_by('nombre')
+        ciudades =  Ciudades.objects.filter(pais_id=persona.pais_id).order_by('nombre')
+        if (request.user.is_superuser):
+            if (persona.tipoactivo == TiposActivos.TODOS):
+                tiposactivos = TiposActivos.get_choices(exclude=TiposActivos.TODOS)
+            else:
+                tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
+        else:
+            tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
+#        print(str(activos.query))
+        return render(request,'activos_qr_filtrar.html', {'persona': persona, 'tiposactivos': tiposactivos, 'areas': areas, 'paises': paises, 'ciudades': ciudades})
+    else:
+        return render(request, '404.html')    
+
+
+@login_required(login_url='/login')
+def activos_qr_listar(request):
+
+    if (request.method == 'POST'):
+        tipo = request.POST.get('tipo')
+        pais = request.POST.get('pais')
+        ciudad = request.POST.get('ciudad')
+#        newid1 = request.POST.get('newid1')
+#        newid2 = request.POST.get('newid2')
+        filters = {}
+        if is_valid(tipo):
+            filters['tipo'] = tipo
+        if is_valid(pais):
+            filters['country_id'] = pais
+        if is_valid(ciudad):
+            filters['city_id'] = ciudad
+        activos = Activos.objects.filter(**filters).order_by('tipo','newid')
+#        print(str(activos.query))
+        return render(request,'activos_qr_listar.html', {'activos': activos})
+    else:
+        return render(request, '404.html')    
 
 
 @login_required(login_url='/login')

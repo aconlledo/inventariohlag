@@ -329,7 +329,7 @@ function PrepararRegistro(id) {
 			$("#estado").val(data.estado);
 			$("#perfil").val(data.perfil);
 			$("#tipoactivo").val(data.tipoactivo);
-			$("#area").val(data.area);
+			$("#area").val(data.area); 
 			},
 		error: function(jqXHR, textStatus, errorThrown) {
 			reject(errorThrown);

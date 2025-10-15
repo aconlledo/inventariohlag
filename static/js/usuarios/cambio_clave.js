@@ -10,7 +10,7 @@ $(document).ready(function(){
 
 	$("#claveactual").blur(function (){  
 		if ($('#claveactual').val() == "") {
-			enviarMsgModalcClave("Falta Clave","Debe Indicar Clave Actual");
+			enviarMsgModalcClave("Need Password","You must indicate your current password.");
 			efectoTemblor($('#ModalcClave'));
 			}
 		else {	
@@ -20,7 +20,7 @@ $(document).ready(function(){
 	
 	$("#nuevaclave").blur(function (){  
 		if ($('#nuevaclave').val() == "") {
-			enviarMsgModalcClave("Falta Clave","Debe Indicar Nueva Clave");
+			enviarMsgModalcClave("Need Password","You must indicate new password.");
 			efectoTemblor($('#ModalcClave'));
 			}
 		else {
@@ -34,7 +34,7 @@ $(document).ready(function(){
 
 	$("#nuevaclaveconf").blur(function (){  
 		if ($('#nuevaclaveconf').val() != $('#nuevaclave').val()) {
-			enviarMsgModalcClave("Claves","Claves no coinciden");
+			enviarMsgModalcClave("Password","Password don't match.");
 			efectoTemblor($('#ModalcClave'));
 			}
 		else {
@@ -49,32 +49,32 @@ $(document).ready(function(){
 		var strength = $('#strength').val();
 
 		if (claveactual == "") {
-			enviarMsgModalcClave("Debe Indicar Clave Actual.");
+			enviarMsgModalcClave("You must indicate your current password.");
 			efectoTemblor($('#ModalcClave'));
 			}
 		else 
 			if (nuevaclave1 == "") {
-				enviarMsgModalcClave("Debe Indicar Nueva Clave.");
+				enviarMsgModalcClave("You must indicate new password");
 				efectoTemblor($('#ModalcClave'));
 				}
 			else
 				if (nuevaclave1.length < 8) {
-					enviarMsgModalcClave("Clave nueva debe tener al menos 8 Caracteres.");
+					enviarMsgModalcClave("New password must have at least 8 Characters.");
 					efectoTemblor($('#ModalcClave'));
 					}
 				else
 					if (strength < 1) {
-						enviarMsgModalcClave("Nueva Clave es Débil.");
+						enviarMsgModalcClave("New password is poor.");
 						efectoTemblor($('#ModalcClave'));
 						}
 					else
 						if (nuevaclave2 == "") {
-							enviarMsgModalcClave("Debe Confirmar Nueva Clave");
+							enviarMsgModalcClave("You must confirm the new password.");
 							efectoTemblor($('#ModalcClave'));
 							}
 						else
 							if (nuevaclave1 != nuevaclave2) {
-								enviarMsgModalcClave("Claves no coinciden");
+								enviarMsgModalcClave("Password don't match");
 								efectoTemblor($('#ModalcClave'));
 								}
 							else {
@@ -156,7 +156,7 @@ function ConfirmaCambioClave() {
 					}
 				},
 			error: function(jqXHR, textStatus, errorThrown) {
-				enviarMsgModalcClave("Error en Comunicación "+jqXHR+" "+textStatus+" "+errorThrown);
+				enviarMsgModalcClave("Communication Error: "+jqXHR+" "+textStatus+" "+errorThrown);
 				}				
 			});
 		} 
@@ -187,7 +187,7 @@ function checkStrength(password) {
 	if (password.length < 8) {
 		$('#strengthMessage').removeClass();
 		$('#strengthMessage').addClass('Short');
-		return 'Clave Inválida mínimo 8 Caracteres';
+		return 'New password must have at least 8 Characters.';
 		}
 	else {
 		$('#strengthMessage').removeClass();
@@ -209,16 +209,16 @@ function checkStrength(password) {
 	if (strength < 1) {
 		$('#strengthMessage').removeClass();
 		$('#strengthMessage').addClass('Weak');
-		return 'Clave inválida. Requiere incluir números y letras.';
+		return 'Invalid password. Numbers and letters must be entered.';
 		} 
 	else if (strength < 2) {
 		$('#strengthMessage').removeClass();
 		$('#strengthMessage').addClass('Good');
-		return 'Clave Válida.';
+		return 'New password Invalid.';
 		} 
 	else {
 		$('#strengthMessage').removeClass();
 		$('#strengthMessage').addClass('Strong');
-		return 'Clave Válida Fuerte.';
+		return 'Password strong and valid.';
 		}
 	} 

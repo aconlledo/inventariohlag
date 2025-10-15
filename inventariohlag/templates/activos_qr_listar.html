@@ -1,0 +1,40 @@
+{% extends 'home_admin.html' %}
+
+{% load static %}
+
+{% block title %}Inventory: QR Print{% endblock %}
+
+{% block content %}
+
+<!-- Custom CSS -->
+<link rel='stylesheet' type='text/css' href="{% static 'css/activos_qr_listar.css' %}" >
+<!-- Custom JS -->
+<script type="text/javascript" src="{% static 'js/inventariohlag/activos_qr_listar.js' %}"></script>  
+
+<div class="container mt-4">
+    <div class="row">
+        <h2>Select QR Codes to Print</h2>
+        <div class="toolbar">
+            <div class="controls">
+                <label><input type="checkbox" id="selectAll"> Select All</label>
+            </div>
+            <div style="flex:1"></div>
+            <div class="count" id="selectedCount">0 Selected</div>
+            <button id="printBtn" name="printBtn" class="btn btn-primary" disabled>Print Selected</button>
+            <button id="newFilter" name="newFilter" class="btn btn-primary" >New Filter</button>
+        </div>
+        <div class="qr-container" id="qrContainer">
+            {% for activo in activos %}
+            <div class="qr-card" data-id="{{ activo.id }}">
+                <img class="qr-img" src="{{ activo.qr.url }}" alt="{{ activo.codigo }}">
+                    {{ activo.get_qr_html_data|safe }}
+                <label><input type="checkbox" class="chk"> Imprimir</label>
+            </div>
+            {% empty %}
+            <p>There are not QR Codes yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

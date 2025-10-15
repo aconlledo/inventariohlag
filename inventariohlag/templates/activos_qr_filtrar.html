@@ -1,0 +1,153 @@
+{% extends 'home_admin.html' %}
+
+{% load static %}
+
+{% block title %}Inventory: QR Print Filter{% endblock %}
+
+{% block content %}
+
+<!-- Custom CSS -->
+<link rel='stylesheet' type='text/css' href="{% static 'css/activos_qr_listar.css' %}" >
+<!-- Custom JS -->
+<script type="text/javascript" src="{% static 'js/inventariohlag/activos_qr_filtrar.js' %}"></script>  
+
+
+{% csrf_token %}
+
+<div class="container mt-4">
+    <div class="row">
+        <h2>Print QR Codes</h2>
+        <div class="toolbar">
+            <div style="flex:1"></div>
+            <button id="printBtn" class="btn btn-primary" disabled>Find Selected</button>
+        </div>
+    </div>
+</div>
+
+  <div class="modal fade" id="Modalfind" name="Modalfind" tabindex="-1" aria-hidden="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div style="max-width: 100%;">
+            <div class="container py-2 h-100">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col col-xl-10">
+                  <div class="card" style="border-radius: 0.5rem;">
+                    <div class="row g-0">
+                      <div class="col d-flex align-items-center">
+                        <div class="card-body p-2 p-lg-2 text-black myform">
+                            <div class="d-flex align-items-center mb-3 pb-1">
+                                <img src="{% static 'imagenes/logo.jpg' %}" width="100" style="height: auto;" class="me-3" />
+                                <h4 class="mb-0">Filter to Print QR</h4>
+                            </div>
+                            <form method="POST" action="/qr_listar/" id="formqr" name="formqr">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Active Type:</label>
+                                            <div class="input-group">                                
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <select required="required" class="form-control w-auto inputselect" name="tipo" id="tipo" style="font-size:11px;">
+                                                {% for code, name in tiposactivos %}
+                                                    {% if request.user.persona.tipoactivo == code %}
+                                                        <option value="{{ code }}" class="text8l" selected>{{ name }}</option>
+                                                    {% else %}
+                                                        <option value="{{ code }}" class="text8l" >{{ name }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Areas:</label>
+                                            <div class="input-group">                                
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                {% if request.user.is_superuser %}
+                                                <select required="required" class="form-control w-auto inputselect" name="area" id="area"  style="font-size:11px;">
+                                                {% else %}
+                                                <select required="required" class="form-control w-auto inputselect" name="area" id="area" disabled style="font-size:11px;">
+                                                {% endif %}
+                                                {% for area in areas %}
+                                                    {% if request.user.persona.area_id == area.id  %}
+                                                        <option value="{{ area.id }}" class="text8l" selected>{{ area.nombre }}</option>
+                                                    {% else %}
+                                                        <option value="{{ area.id }}" class="text8l">{{ area.nombre }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="tit10lb">Country:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <div id="divpaises" name="divpaises">
+                                                    <select required="required" class="form-control w-auto inputselect" name="pais" id="pais" style="font-size:11px;">
+                                                    {% for pais in paises %}
+                                                        {% if request.user.persona.pais_id %}
+                                                            <option value="{{ pais.id }}" class="text8l" selected>{{ pais.nombre }}</option>
+                                                        {% else %}
+                                                            <option value="{{ pais.id }}" class="text8l">{{ pais.nombre }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>  
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="tit10lb">City:</label>
+                                            <div class="input-group">                                
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                                                </div>
+                                                <div id="divciudades" name="divciudades">
+                                                    <select required="required" class="form-control w-auto inputselect" name="ciudad" id="ciudad" style="font-size:11px;">
+                                                        {% for ciudad in ciudades %}
+                                                            <option value="{{ ciudad.id }}" class="text8l">{{ ciudad.nombre }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="pt-1 mb-4 d-flex">
+                                        <button type="submit" class="w-100 mb-2 btn btn-lg rounded-3 btn-primary mx-3" id="btnsubmit" name="btnsubmit">Find</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                      </div>
+                    </div> 
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+                             
+{% endblock %}
