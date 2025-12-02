@@ -37,7 +37,7 @@ def elimina_qr():
 def crear_qr():
     total = 0
     elimina_qr()
-    print("⚙️ Generando nuevos códigos QR...")
+    print("⚙️  Generando nuevos códigos QR...")
     for a in Activos.objects.all():
         a.generar_qr()
         a.save()

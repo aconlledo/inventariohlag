@@ -63,7 +63,7 @@ $(document).ready(function(){
     $("#viewqr").dialog({ 
         autoOpen: false,	 
         position: { my: "center", at: "center", of: window },
-        height: 550,
+        height: 560,
         width: 700,
         resizable: false,
         modal: true,  

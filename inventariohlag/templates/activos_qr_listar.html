@@ -23,16 +23,55 @@
             <button id="printBtn" name="printBtn" class="btn btn-primary" disabled>Print Selected</button>
             <button id="newFilter" name="newFilter" class="btn btn-primary" >New Filter</button>
         </div>
+    </div>
+    <div class="row">
         <div class="qr-container" id="qrContainer">
-            {% for activo in activos %}
-            <div class="qr-card" data-id="{{ activo.id }}">
-                <img class="qr-img" src="{{ activo.qr.url }}" alt="{{ activo.codigo }}">
-                    {{ activo.get_qr_html_data|safe }}
-                <label><input type="checkbox" class="chk"> Imprimir</label>
-            </div>
-            {% empty %}
-            <p>There are not QR Codes yet.</p>
-            {% endfor %}
+            <table id="tablaregs" class="table table-labels table-bordered table-hover">
+                <thead >
+                    <tr>
+                        <th class="tdtit10">Column 1</th>
+                        <th class="tdtit10">Column 2</th>
+                        <th class="tdtit10">Column 3</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% if activos %}
+                    {% for activo in activos %}
+                    {# Abrir fila al inicio de cada grupo de 3 #}
+                        {% if forloop.counter0|divisibleby:3 %}
+                        <tr>
+                        {% endif %}
+                            <td>
+                                <div class="label qr-card" data-id="{{ activo.id }}">
+                                    <img class="qr-img" src="{{ activo.qr.url }}" alt="{{ activo.codigo }}" title="{{ activo.get_qr_html_data|safe }}">
+                                    <div class="textcard">
+                                        <label><input type="checkbox" class="chk"> Imprimir</label></ br>
+                                    </div>
+                                </div>
+                            </td>
+                        {# Cerrar fila solamente cuando completamos 3 elementos #}
+                        {% if forloop.counter|divisibleby:3 %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    {# Si quedo una fila sin completar (1 o 2 items), completarla y cerrarla #}
+                    {% if not activos|length|divisibleby:3 %}
+                    {# la fila actualmente está abierta: añadimos TD vacíos según faltan #}
+                        {% if activos|length|add:-1|divisibleby:3 %}
+                            {# sobra 1 item → faltan 2 TD #}
+                            <td></td><td></td>
+                        {% elif activos|length|add:-2|divisibleby:3 %}
+                            {# sobran 2 items → falta 1 TD #}
+                            <td></td>
+                        {% endif %}
+                        </tr>
+                    {% endif %}
+                {% else %}
+                    <tr><td colspan="3">There are not QR Codes yet.</td></tr>
+                {% endif %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

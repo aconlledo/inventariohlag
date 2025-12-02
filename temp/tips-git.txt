@@ -10,15 +10,15 @@ git init
 
 Agrega archivos al staging area
 ===============================
-git add .
+git add -A  
+git add .   
 git add archivo
-git add -A
 git push origin main --force
 
 
 Traslada archivos desde staging area al repositorio local
 =========================================================
-git commit -m "Version20250922"
+git commit -m "Version20251015"
 
 Usar rama main
 ================

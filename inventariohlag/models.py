@@ -1,11 +1,13 @@
 from django.db import models
 from django.db.models import Max
 from tablas.models import *
-import qrcode, os
+import qrcode
+import os
 from django.core.files import File
 from io import BytesIO
 from django.conf import settings
 from django.core import signing
+from django.core.files.base import ContentFile
 from PIL import Image, ImageDraw, ImageFont
 
 
@@ -56,7 +58,7 @@ class Activos(models.Model):
         super().save(*args, **kwargs)
         if not self.qr:
             self.generar_qr()
-            super().save(update_fields=['qr'])
+        super().save(update_fields=['qr'])
          
     @property
     def fecha_fmodifica(self):
@@ -82,63 +84,142 @@ class Activos(models.Model):
     def fecha_hora_fingreso(self):
         return self.fingreso.strftime("%d-%m-%Y %H:%M")  
 
+
     def generar_qr(self):
         token = signing.dumps({'id': self.id})
-        url = f"{settings.SITE_URL}/activos/qr/{token}/" 
+        url = f"{settings.SITE_URL}/activos/qr/{token}/"
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_H,
             box_size=8,
-            border=4
-            )
+            border=2
+        )
         qr.add_data(url)
         qr.make(fit=True)
         qr_img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
+
+        # fuentes (caída a default si no encuentra)
         try:
-#            font_bold_path = os.path.join(settings.BASE_DIR,"static/fonts/dejavu-sans-nold.ttf")
-#            font_normal_path = os.path.join(settings.BASE_DIR,"static/fonts/dejavu-sans-regular.ttf")
-            font_bold_path = os.path.join(settings.BASE_DIR,"static/fonts/arialceb.ttf")
-            font_normal_path = os.path.join(settings.BASE_DIR,"static/fonts/arialce.ttf")
-            font_bold = ImageFont.truetype(font_bold_path, 16)
-            font_normal = ImageFont.truetype(font_normal_path, 16)
-        except:
+            font_bold_path = os.path.join(settings.BASE_DIR, "static/fonts/arialceb.ttf")
+            font_normal_path = os.path.join(settings.BASE_DIR, "static/fonts/arialce.ttf")
+            font_bold = ImageFont.truetype(font_bold_path, 26)
+            font_normal = ImageFont.truetype(font_bold_path, 26)           
+#            font_normal = ImageFont.truetype(font_normal_path, 26)
+        except Exception:
             font_bold = ImageFont.load_default()
             font_normal = ImageFont.load_default()
+
+        # Cargar JPG inferior (si existe)
+        logo_path = os.path.join(settings.BASE_DIR, "static/imagenes/logo.jpg")
+        if os.path.exists(logo_path):
+            try:
+                logo_img = Image.open(logo_path).convert("RGB")
+            except Exception:
+                logo_img = None
+        else:
+            logo_img = None
+
+        # medidas y secciones
         qr_width, qr_height = qr_img.size
         padding = 2
-        text_width = 380
+        text_width = 380  # ancho reservado para la sección de la derecha
+
+        # División derecha: 70% texto arriba + 30% imagen abajo
+        right_section_height = qr_height
+        text_height = int(right_section_height * 0.70)
+        image_height = int(right_section_height * 0.30)
+
+        # ajustar logo al ancho de la sección de texto y a su altura (si hay logo)
+        if logo_img:
+            logo_img = logo_img.resize((text_width, image_height))
+
+        # tamaño total del canvas combinado
         total_width = qr_width + text_width + padding
-        total_height = max(qr_height, 220)
+        total_height = qr_height
         combined = Image.new("RGB", (total_width, total_height), "white")
         combined.paste(qr_img, (0, 0))
         draw = ImageDraw.Draw(combined)
-        x_text = qr_width + padding
-        y = 180
-        line_height = 20  # Espaciado entre líneas 
-        title_value_gap = 80  # Separación entre título y valor
-        tipo = TiposActivos.TIPOS[int(self.tipo)][1]
+
+        # --- PREPARAR LÍNEAS DE TEXTO (debe definirse antes de calcular alturas) ---
+        tipo = TiposActivos.TIPOS[int(self.tipo)][1] if hasattr(self, 'tipo') else ''
         identificador = f'{tipo}-{self.newid}'
+
+        # proteger posibles None en atributos relacionados
+        nombre_val = getattr(self.nombre, 'nombre', '') if self.nombre else ''
+        serial_val = self.serial or ''
+        city_val = getattr(self.city, 'nombre', '') if self.city else ''
+        building_val = getattr(self.building, 'nombre', '') if self.building else ''
+
         text_lines = [
-            ("Type: ", tipo),
             ("ID #: ", identificador),
-            ("Name: ", self.nombre.nombre),
-            ("Serial: ", self.serial),
-            ("City: ", self.city.nombre),
-            ("Building: ", self.building.nombre),
-            ]
+            ("Name: ", nombre_val),
+            ("Serial: ", serial_val),
+            ("City: ", city_val),
+            ("Building: ", building_val),
+        ]
+
+        # Posición X donde empieza el texto (a la derecha del QR)
+        x_text = qr_width + padding
+
+        # calcular altura del texto y centrar verticalmente dentro del area text_height
+        # line_height se puede derivar de la fuente, pero usamos un valor decente por defecto
+        # puedes ajustar si la fuente es más grande
+        try:
+            # calculamos una altura de línea aproximada usando la fuente normal
+            ascent, descent = font_normal.getmetrics()
+            line_height = ascent + descent + 4  # +4 px de padding
+        except Exception:
+            line_height = 20
+
+        num_lines = len(text_lines)
+        total_text_height = num_lines * line_height
+
+        # Centrado vertical dentro del área de texto (75% de la derecha)
+        y = (text_height - total_text_height) // 2
+        if y < 0:
+            y = 0  # por seguridad si hay más líneas que espacio
+
+        # --- calcular ancho real del título para evitar superposición ---
+        max_title_width = 0
+        for title, _ in text_lines:
+            bbox = font_bold.getbbox(title)
+            w = bbox[2] - bbox[0]   # ancho del texto
+            max_title_width = max(max_title_width, w)
+
+        title_value_gap = max_title_width + 10  # separación segura
+
+        # --- dibujar texto ---
         for title, value in text_lines:
             draw.text((x_text, y), title, font=font_bold, fill="black")
-            draw.text((x_text + title_value_gap, y), value, font=font_normal, fill="black")
+            draw.text((x_text + title_value_gap, y), str(value), font=font_normal, fill="black")
             y += line_height
+
+        # Pegar JPG debajo del texto (en el 75% de altura) si existe
+        if logo_img:
+            combined.paste(logo_img, (x_text, text_height))
+
+        # Guardar en buffer y asignar al ImageField
         buffer = BytesIO()
         combined.save(buffer, format="PNG", dpi=(150, 150))
+        buffer.seek(0)
         filename = f"qr_{identificador}.png"
-        self.qr.save(filename, File(buffer), save=False)
-    
+        # usar ContentFile para seguridad
+        self.qr.save(filename, ContentFile(buffer.getvalue()), save=False)
+        buffer.close()
+ 
+   
     @property
     def get_qr_html_data(self):
         tipo = TiposActivos.TIPOS[int(self.tipo)][1]
         return f"""
+        <div class='text8l'><strong>ID #:</strong> {tipo}-{self.newid}</div>
+        <div class='text8l'><strong>Name:</strong> {self.nombre.nombre}</div>
+        <div class='text8l'><strong>Serial:</strong> {self.serial}</div>
+        <div class='text8l'><strong>City:</strong> {self.city.nombre}</div>
+        <div class='text8l'><strong>Building:</strong> {self.building.nombre}</div>
+        """
+        
+"""
         <div class='qr-info'>
             <div class='text8l'><strong>ID #:</strong> {tipo}-{self.newid}</div>
             <div class='text8l'><strong>Name:</strong> {self.nombre.nombre}</div>
@@ -147,24 +228,6 @@ class Activos(models.Model):
             <div class='text8l'><strong>Building:</strong> {self.building.nombre}</div>
         </div>
         """
-        
-'''
-    def generar_qr(self):
-        # Genera un token firmado que incluye el código del activo
-        token = signing.dumps({'id': self.id})
-        # Construye la URL segura (ajústala según tu dominio)
-        url = f"{settings.SITE_URL}/activos/qr/{token}/"
-        # Crea el código QR con la URL
-        qr_img = qrcode.make(url)
-        # Guarda la imagen en memoria y luego en el campo
-        buffer = BytesIO()
-        qr_img.save(buffer, format='PNG')
-        tipo = TiposActivos.TIPOS[int(self.tipo)][1]
-        filename = f"qr-{tipo}-{self.newid}.png"
-        self.qr.save(filename, File(buffer), save=False)
-'''
-
-
 
 class Areas(models.Model):
 

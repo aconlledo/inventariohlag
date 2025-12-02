@@ -296,13 +296,11 @@ def activos_qr_filtrar(request):
 
 @login_required(login_url='/login')
 def activos_qr_listar(request):
-
+    
     if (request.method == 'POST'):
         tipo = request.POST.get('tipo')
         pais = request.POST.get('pais')
         ciudad = request.POST.get('ciudad')
-#        newid1 = request.POST.get('newid1')
-#        newid2 = request.POST.get('newid2')
         filters = {}
         if is_valid(tipo):
             filters['tipo'] = tipo
@@ -318,9 +316,8 @@ def activos_qr_listar(request):
 
 
 @login_required(login_url='/login')
+
 def areas_listar(request):
-#    if not request.user.is_superuser:
-#        return render(request, '404.html')
     if (request.method == 'GET'):
         areasnombres = NombresAreas.objects.all().order_by('nombre')
         areas = Areas.objects.all().order_by('areaname_id')

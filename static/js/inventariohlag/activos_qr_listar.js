@@ -7,54 +7,100 @@ $(document).ready(function(){
     updateState();
     });
 
-  $('#printBtn').on('click', function() {
-    const selected = $('.chk:checked').closest('.qr-card');
-    if (selected.length === 0) return;
-
-    const printWindow = window.open('', '_blank');
-    const htmlStart = `
-      <!doctype html><html><head><meta charset='utf-8'>
-      <title>QR Codes Print</title>
-      <style>
-        @page { size: A4; margin: 10mm; }
-        body{font-family:Arial,Helvetica,sans-serif;padding:10px}
-        .page{display:grid;grid-template-columns:repeat(3,1fr);gap:10mm;justify-items:center}
-        .card{
-          width:6cm; height:6cm; 
-          text-align:center; border:1px solid #ddd;
-          border-radius:6px; padding:6px;
-          display:flex; flex-direction:column;
-          justify-content:center; align-items:center;
-        }
-        img{width:4cm;height:4cm;object-fit:contain}
-        .info{font-size:10pt;line-height:1.2;text-align:left;width:100%;margin-top:4px}
-        .info strong{font-size:10pt}
-      </style>
-      </head><body>`;
-    const htmlEnd = '</body></html>';
-
-    let cardsHtml = '';
-    selected.each(function() {
-      const img = $(this).find('img').attr('src');
-      const nombre = $(this).find('.qr-label').text();
-      cardsHtml += `
-        <div class='card'>
-          <img src='${img}' alt='${nombre}'>
-        </div>`;
-      });
-
-    printWindow.document.write(htmlStart + '<div class=\"page\">' + cardsHtml + '</div>' + htmlEnd);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 400);
-  });
-
   updateState();
+
+  Crear_DataTable(); 
 
   $('#newFilter').on('click', function(e) {
     e.preventDefault(); 
     window.location.href = '/qr_filtrar'; 
     });
+
+  $('#printBtn').on('click', function () {
+    const selected = $('.chk:checked').closest('.qr-card');
+    if (selected.length === 0) return;
+
+    const printWindow = window.open('', '_blank');
+
+    const htmlStart = `
+    <!doctype html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>Printing QR</title>
+        <style>
+
+            * {
+              margin: 0 !important;
+              padding: 0 !important;
+              box-sizing: border-box !important;
+            }
+
+            @page { size: Letter; margin: 0; }
+
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            /* Contenedor exacto para 3×8 etiquetas */
+            .grid {
+              width: 220mm;       
+              height: 280mm;  
+              display: grid;
+              grid-template-columns: 70mm 70mm 70mm;
+              grid-template-rows: repeat(8, 35mm);
+              column-gap: 5mm;
+              row-gap: 0mm;
+              margin: 0 auto;
+              background: white;
+            }
+
+            .card {
+              width: 70mm;
+              height: 35mm;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              overflow: hidden;
+              background: white;
+            }
+
+            img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+    <div class="grid">
+    `;
+
+    const htmlEnd = `
+    </div>
+    </body>
+    </html>`;
+
+    let cardsHtml = '';
+    selected.each(function () {
+        const img = $(this).find('img').attr('src');
+        cardsHtml += `
+            <div class="card">
+                <img src="${img}">
+            </div>
+        `;
+    });
+
+    printWindow.document.write(htmlStart + cardsHtml + htmlEnd);
+    printWindow.document.close();
+
+    setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 200);
+  });
 
   });
     
@@ -72,3 +118,21 @@ function updateState() {
     $('#selectAll').prop('checked', selected === total);
     $('#selectAll').prop('indeterminate', selected > 0 && selected < total);
     };
+
+
+function Crear_DataTable() {
+
+  $('#tablaregs').DataTable ({
+      destroy: true,
+      paging: true,
+      info: false,
+      pagingType: 'full_numbers',
+      bJQueryUI: true,
+      ordering: false, 
+      lengthChange: false,
+      pageLength: 8
+    });   
+    
+    $(".qr-img").tooltip({ html: true });
+    
+  };
