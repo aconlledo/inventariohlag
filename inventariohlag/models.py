@@ -84,10 +84,9 @@ class Activos(models.Model):
     def fecha_hora_fingreso(self):
         return self.fingreso.strftime("%d-%m-%Y %H:%M")  
 
-
     def generar_qr(self):
         token = signing.dumps({'id': self.id})
-        url = f"{settings.SITE_URL}/activos/qr/{token}/"
+        url = f"{settings.SITE_URL}/qr_detalle/{token}/"
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_H,

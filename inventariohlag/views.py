@@ -230,7 +230,7 @@ def modificaractivo(request):
         return render(request, '404.html')    
 
 
-@login_required
+@login_required(login_url='/login')
 def detalle_activo_qr(request, token):
     try:
         # Decodifica el token (expira a los 10 minutos = 600 segundos)
@@ -296,7 +296,7 @@ def activos_qr_filtrar(request):
 
 @login_required(login_url='/login')
 def activos_qr_listar(request):
-    
+     
     if (request.method == 'POST'):
         tipo = request.POST.get('tipo')
         pais = request.POST.get('pais')
