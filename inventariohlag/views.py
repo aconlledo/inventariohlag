@@ -235,11 +235,13 @@ def detalle_activo_qr(request, token):
     from urllib.parse import unquote
     from django.core import signing
     from django.core.signing import SignatureExpired, BadSignature, BadTimeSignature
+    print("TOKEN RAW:", token)
+    decoded = unquote(token)
+    print("TOKEN DECODE:", decoded)
     
-    token = unquote(token)
     try:
         # Decodifica el token (expira a los 10 minutos = 600 segundos)
-        data = signing.loads(token, max_age=600)
+        data = signing.loads(decoded, max_age=600)
         id = data['id']
         activo = get_object_or_404(Activos, codigo=id)
     except SignatureExpired:
