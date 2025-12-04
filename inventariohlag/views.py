@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404, render,redirect
 from django.http import HttpResponse
-from django.core import signing, exceptions
+from django.core import exceptions
 from django.contrib.auth import logout
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -232,6 +232,9 @@ def modificaractivo(request):
 
 @login_required(login_url='/login')
 def detalle_activo_qr(request, token):
+    from django.core import signing
+    from django.core.signing import SignatureExpired, BadSignature
+
     try:
         # Decodifica el token (expira a los 10 minutos = 600 segundos)
         data = signing.loads(token, max_age=600)
