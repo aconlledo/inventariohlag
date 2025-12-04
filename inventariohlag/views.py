@@ -234,7 +234,7 @@ def modificaractivo(request):
 def detalle_activo_qr(request, token):
     from urllib.parse import unquote
     from django.core import signing
-    from django.core.signing import SignatureExpired, BadSignature, BadTimeSignature
+    from django.core.signing import SignatureExpired, BadSignature
     print("TOKEN RAW:", token)
     decoded = unquote(token)
     print("TOKEN DECODE:", decoded)
@@ -246,7 +246,7 @@ def detalle_activo_qr(request, token):
         activo = get_object_or_404(Activos, codigo=id)
     except SignatureExpired:
         return HttpResponse("QR Code Expired. Please try scanning a new code.", status=403)
-    except (BadSignature, BadTimeSignature):
+    except BadSignature:
         return HttpResponse("Invalid QR Code.", status=403)
     owners = Owners.OWNERS
     contabilizados = Accounted.ACCOUNTED
