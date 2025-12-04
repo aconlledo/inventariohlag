@@ -240,8 +240,8 @@ def detalle_activo_qr(request, token):
     print("TOKEN DECODE:", decoded)
     
     try:
-        # Decodifica el token (expira a los 10 minutos = 600 segundos)
-        data = signing.loads(decoded, max_age=600)
+        # Decodifica el token (no expira)
+        data = signing.loads(decoded)
         id = data['id']
         activo = get_object_or_404(Activos, codigo=id)
     except SignatureExpired:
