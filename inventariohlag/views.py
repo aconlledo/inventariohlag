@@ -243,7 +243,7 @@ def detalle_activo_qr(request, token):
         # Decodifica el token (no expira)
         data = signing.loads(decoded)
         id = data['id']
-        activo = get_object_or_404(Activos, codigo=id)
+        activo = get_object_or_404(Activos, id=id)
     except SignatureExpired:
         return HttpResponse("QR Code Expired. Please try scanning a new code.", status=403)
     except BadSignature:
