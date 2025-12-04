@@ -240,9 +240,9 @@ def detalle_activo_qr(request, token):
         data = signing.loads(token, max_age=600)
         id = data['id']
         activo = get_object_or_404(Activos, codigo=id)
-    except exceptions.SignatureExpired:
+    except SignatureExpired:
         return HttpResponse("QR Code Expired. Please try scanning a new code.", status=403)
-    except exceptions.BadSignature:
+    except BadSignature:
         return HttpResponse("Invalid QR Code.", status=403)
     owners = Owners.OWNERS
     contabilizados = Accounted.ACCOUNTED
