@@ -236,7 +236,7 @@ def detalle_activo_qr(request, token):
     from django.core import signing
     from django.core.signing import SignatureExpired, BadSignature
     print("TOKEN RAW:", token)
-    decoded = unquote(token)
+    decoded = unquote(token).rstrip('/')
     print("TOKEN DECODE:", decoded)
     
     try:
