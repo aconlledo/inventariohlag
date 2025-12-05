@@ -23,8 +23,8 @@
                 <div class="card-body p-lg-3 text-black">
                   <div class="input-group flex-nowrap mx-2">
                     <div class="d-flex flex-column">
-                      <input type="hidden" name="next_url" id="next_url" value="{{ next_url }}">
-                      <form id="formlogin" name="formlogin" method="POST">                      
+                      <form id="formlogin" name="formlogin" method="POST">    
+                        <input type="hidden" name="next_url" id="next_url" value="{{ next_url }}">                  
                         {% csrf_token %}
                         <div class="d-flex flex-column">
                           <div class="form-group">

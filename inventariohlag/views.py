@@ -233,7 +233,6 @@ def modificaractivo(request):
         return render(request, '404.html')    
 
 
-@csrf_exempt
 @login_required(login_url='/login')
 def detalle_activo_qr(request, token):
     from urllib.parse import unquote
