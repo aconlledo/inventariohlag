@@ -28,6 +28,7 @@ def login_general(request):
     if (request.method == 'POST'):
         username = request.POST.get('username')
         password = request.POST.get('password')
+        next_url = request.POST.get('next_url')
         user = authenticate(request,username=username, password=password)
         if user is None :
             context['status'] = 401 
@@ -51,13 +52,25 @@ def login_general(request):
                         context['status'] = 201 
                         context['message1'] = 'You must change your password..'
                     if (persona.perfil == PerfilesUsuarios.USUARIO):
-                        context['url'] = '/usuarios/login_usuario/' 
+                        if (next_url is None):
+                            context['url'] = '/usuarios/login_usuario/' 
+                        else:
+                            if ("qr_detalle" in next_url):
+                                context['url'] = next_url 
+                            else:
+                                context['url'] = '/usuarios/login_usuario/'        
                     else:
                         if (persona.perfil == PerfilesUsuarios.ADMINISTRADOR):
-                            context['url'] = '/usuarios/login_administrador/' 
+                            if (next_url is None):
+                                context['url'] = '/usuarios/login_administrador/' 
+                            else:
+                                if ("qr_detalle" in next_url):
+                                    context['url'] = next_url 
+                                else:
+                                    context['url'] = '/usuarios/login_administrador/'  
                         else:                     
                             context['status'] = 403 
-                            context['message1'] = f'Ingreso Inválido(403)'
+                            context['message1'] = f'Invalid Entry(403)'
                             context['message2'] = 'Not Enabled.'   
                 else:
                     context['status'] = 404 

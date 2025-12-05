@@ -12,7 +12,10 @@ from django.db.models import Q
 
 
 def login(request):
-    return render(request, 'login.html')
+    next_url = request.GET.get('next') or request.POST.get('next')
+    if (next_url is None):
+        next_url = ""
+    return render(request, 'login.html',{'next_url': next_url})
 
 @csrf_exempt
 def salir_plataforma(request):
@@ -230,15 +233,14 @@ def modificaractivo(request):
         return render(request, '404.html')    
 
 
-# @login_required(login_url='/login')
+@csrf_exempt
+@login_required(login_url='/login')
 def detalle_activo_qr(request, token):
     from urllib.parse import unquote
     from django.core import signing
     from django.core.signing import SignatureExpired, BadSignature
-    print("TOKEN RAW:", token)
+
     decoded = unquote(token).rstrip('/')
-    print("TOKEN DECODE:", decoded)
-    
     try:
         # Decodifica el token (no expira)
         data = signing.loads(decoded)

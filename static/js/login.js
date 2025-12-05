@@ -70,7 +70,7 @@ $(document).ready(function(){
 			efectoTemblor($('#LoginModal'));
 			}
 		else {
-			EnviarLogin(username,password);
+			EnviarLogin();
 			}
 		});
 
@@ -196,7 +196,10 @@ function limpiarCamposModalLogin() {
 //
 // Login
 //
-function EnviarLogin(username,password) {
+function EnviarLogin() {
+	var username = $('#username').val();
+	var password = allTrim($('#claveuser').val());
+	var next_url = $('#next_url').val();
 
 	try {
 		$.ajax({
@@ -204,7 +207,7 @@ function EnviarLogin(username,password) {
 			async: false,
 			url: "/usuarios/login_general/", 
 			dataType: 'json',
-			data: {username: username, password: password, csrfmiddlewaretoken:  $("input[name=csrfmiddlewaretoken]").val()},
+			data: {username: username, password: password, next_url: next_url, csrfmiddlewaretoken:  $("input[name=csrfmiddlewaretoken]").val()},
 			beforeSend: function() {
 				$('#cclaveusername').val(username);
 				},
