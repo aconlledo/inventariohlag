@@ -309,6 +309,21 @@ def activos_qr_listar(request):
         tipo = request.POST.get('tipo')
         pais = request.POST.get('pais')
         ciudad = request.POST.get('ciudad')
+        frow = request.POST.get('frow')
+        fcol = request.POST.get('fcol')
+        try: 
+            frow = int(frow)
+        except:
+            frow = 1
+        if not (1 <= frow <= 8):
+            frow = 1
+        try: 
+            fcol = int(fcol)
+        except:
+            fcol = 1
+        if not (1 <= fcol <= 3):
+            fcol = 1
+        fcell = 3 * (frow -  1 ) + fcol    
         filters = {}
         if is_valid(tipo):
             filters['tipo'] = tipo
@@ -318,7 +333,7 @@ def activos_qr_listar(request):
             filters['city_id'] = ciudad
         activos = Activos.objects.filter(**filters).order_by('tipo','newid')
 #        print(str(activos.query))
-        return render(request,'activos_qr_listar.html', {'activos': activos})
+        return render(request,'activos_qr_listar.html', {'activos': activos, 'fcell': fcell})
     else:
         return render(request, '404.html')    
 

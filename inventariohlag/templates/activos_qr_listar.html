@@ -26,6 +26,7 @@
     </div>
     <div class="row">
         <div class="qr-container" id="qrContainer">
+            <input type="hidden" name="fcell" id="fcell" value="{{ fcell }}" />
             <table id="tablaregs" class="table table-labels table-bordered table-hover">
                 <thead >
                     <tr>
@@ -42,16 +43,20 @@
                         <tr>
                         {% endif %}
                             <td>
+                            {% if forloop.counter < fcell %}
+                                <div class="label qr-card"></div>
+                            {% else %}
                                 <div class="label qr-card" data-id="{{ activo.id }}">
                                     <img class="qr-img" src="{{ activo.qr.url }}" alt="{{ activo.codigo }}" title="{{ activo.get_qr_html_data|safe }}">
                                     <div class="textcard">
                                         <label><input type="checkbox" class="chk"> Imprimir</label></ br>
                                     </div>
                                 </div>
+                            {% endif %}
                             </td>
                         {# Cerrar fila solamente cuando completamos 3 elementos #}
                         {% if forloop.counter|divisibleby:3 %}
-                            </tr>
+                        </tr>
                         {% endif %}
                     {% endfor %}
 

@@ -83,6 +83,12 @@ $(document).ready(function(){
     </body>
     </html>`;
 
+    let fcell = $('#fcell').val();
+    let cardsHtmlblank = '';
+    for (let i = 1; i < fcell; i++) {
+      cardsHtmlblank += `<div class="card"></div>`;
+		  }
+
     let cardsHtml = '';
     selected.each(function () {
         const img = $(this).find('img').attr('src');
@@ -93,7 +99,7 @@ $(document).ready(function(){
         `;
     });
 
-    printWindow.document.write(htmlStart + cardsHtml + htmlEnd);
+    printWindow.document.write(htmlStart + cardsHtmlblank + cardsHtml + htmlEnd);
     printWindow.document.close();
 
     setTimeout(() => {
