@@ -20,7 +20,9 @@ class Activos(models.Model):
     modelo = models.ForeignKey(Modelos, on_delete=models.SET_NULL,blank=True,null=True)
     fabricante = models.ForeignKey(Fabricantes, on_delete=models.SET_NULL,blank=True,null=True)
     sku = models.CharField(max_length=45,blank=True,null=True)
-    detalle = models.CharField(max_length=250,blank=True,null=True)
+    desc1 = models.CharField(max_length=250,blank=True,null=True)
+    desc2 = models.CharField(max_length=250,blank=True,null=True)
+    desc3 = models.CharField(max_length=250,blank=True,null=True)
     serial = models.CharField(max_length=45,blank=True,null=True)
     proveedor = models.ForeignKey(Proveedores,on_delete=models.SET_NULL,blank=True,null=True)   
     owner = models.CharField(max_length=1,choices=Owners.OWNERS,default=Owners.HLAGCL)
@@ -44,7 +46,7 @@ class Activos(models.Model):
     
     class Meta:
         db_table = "hlag_activos"  
-        ordering = ['tipo','newid','nombre','modelo','fabricante','sku','detalle','serial','proveedor','owner','factura','fcompra','vcompra',
+        ordering = ['tipo','newid','nombre','modelo','fabricante','sku','desc1','desc2','desc3','serial','proveedor','owner','factura','fcompra','vcompra',
                     'factivacion','accounted','vactual','building','floor','zona','city','country','estado','festado','usuarioinv','fingreso','fmodifica','qr']
 
     def __str__(self):

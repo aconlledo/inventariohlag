@@ -191,7 +191,9 @@ function PrepararRegistro(id){
                     $('#modelo').val(activo.modelo);
                     $('#fabricante').val(activo.fabricante);
                     $('#sku').val(activo.sku);
-                    $('#detalle').val(activo.detalle);
+                    $('#desc1').val(activo.desc1);
+                    $('#desc2').val(activo.desc2);
+                    $('#desc3').val(activo.desc3);
                     $('#serial').val(activo.serial);
                     $('#proveedor').val(activo.proveedor);
                     $('#owner').val(activo.owner);

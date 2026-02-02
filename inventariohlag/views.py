@@ -133,7 +133,9 @@ def leeractivo(request):
             registro['modelo'] = activo.modelo_id
             registro['fabricante'] = activo.fabricante_id
             registro['sku'] = activo.sku
-            registro['detalle'] = activo.detalle
+            registro['desc1'] = activo.desc1
+            registro['desc2'] = activo.desc2
+            registro['desc3'] = activo.desc3
             registro['serial'] = activo.serial
             registro['proveedor'] = activo.proveedor_id
             registro['owner'] = activo.owner
@@ -175,7 +177,9 @@ def modificaractivo(request):
         modelo = request.POST.get('modelo')
         fabricante = request.POST.get('fabricante')
         sku = request.POST.get('sku')
-        detalle = request.POST.get('detalle')
+        desc1 = request.POST.get('desc1')
+        desc2 = request.POST.get('desc2')
+        desc3 = request.POST.get('desc3')
         serial = request.POST.get('serial')
         proveedor = request.POST.get('proveedor')
         owner = request.POST.get('owner')
@@ -201,7 +205,7 @@ def modificaractivo(request):
         elif (accion == AccionesCrud.CREAR):
             try:
                 Activos.objects.create(tipo=tipo,nombre_id=nombre,modelo_id=modelo,fabricante_id=fabricante,
-                                       detalle=detalle,serial=serial,proveedor_id=proveedor,owner=owner,factura=factura,fcompra=fcompra,
+                                       desc1=desc1,desc2=desc2,desc3=desc3,serial=serial,proveedor_id=proveedor,owner=owner,factura=factura,fcompra=fcompra,
                                        vcompra=vcompra,factivacion=factivacion,accounted=accounted,vactual=vactual,
                                        building_id=building,floor=floor,zona_id=zona,city_id=city,country_id=country,sku=sku,
                                        estado=estado,festado=festado,usuarioinv_id=usuarioinv)
@@ -210,7 +214,7 @@ def modificaractivo(request):
         else:
             try:
                 Activos.objects.filter(id=id).update(tipo=tipo,nombre_id=nombre,modelo_id=modelo,fabricante_id=fabricante,
-                                       detalle=detalle,serial=serial,proveedor_id=proveedor,owner=owner,factura=factura,fcompra=fcompra,
+                                       desc1=desc1,desc2=desc2,desc3=desc3,serial=serial,proveedor_id=proveedor,owner=owner,factura=factura,fcompra=fcompra,
                                        vcompra=vcompra,factivacion=factivacion,accounted=accounted,vactual=vactual,
                                        building_id=building,floor=floor,zona_id=zona,city_id=city,country_id=country,sku=sku,
                                        estado=estado,festado=festado,usuarioinv_id=usuarioinv)
@@ -281,7 +285,7 @@ def ver_qr(request):
 
 @login_required(login_url='/login')
 def activos_qr_filtrar(request):
-    
+     
     if (request.method == 'GET'):
         persona = request.user.persona
         areas = NombresAreas.objects.all().order_by('nombre')

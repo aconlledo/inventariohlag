@@ -4,10 +4,12 @@ class Owners:
     OWN = '0'
     LEASE = '1'
     HLAGCL = '2'
+    SITA = '3'
     OWNERS = [
         (OWN, 'OWN'),
         (LEASE, 'LEASE'),
-        (HLAGCL, 'HAPAG-LLOYD CHILE SPA'),
+        (HLAGCL, 'Hapag-Lloyd'),
+        (SITA, 'SITA'),
         ]  
     
 class TiposActivos:
@@ -48,18 +50,18 @@ class Accounted:
     
 class Estados:
     ASSIG = '0'
-    DECOM = '1'
-    INUSE = '2'
+    ACTIV = '1'
+    INSTA = '2'
     NEW = '3'
     SPARE = '4'
     USED = '5'
     ESTADOS = [
-        (ASSIG, 'ASSIGNED'),
-        (DECOM, 'DECOMMISSIONED'),
-        (INUSE, 'IN USE'),
-        (NEW, 'NEW'),
-        (SPARE, 'SPARE'),
-        (USED, 'USED'),
+        (ASSIG, 'Assigned'),
+        (ACTIV, 'Active'),
+        (INSTA, 'Installed'),
+        (NEW, 'New'),
+        (SPARE, 'Spare'),
+        (USED, 'Used'),
         ]  
 
     

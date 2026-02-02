@@ -23,7 +23,7 @@
                         {% endif %}
                     {% endfor %}
                 </td>
-                <td class="text8c" id="iden{{activo.id}}">{{activo.newid}}</td>
+                <td class="text8c" id="iden{{activo.id}}">{{ activo.newid|stringformat:"s" }}</td>
                 <td class="text8c" id="nom{{activo.id}}">{{activo.nombre}}</td>
                 <td class="text8c" id="fab{{activo.id}}">{{activo.fabricante.nombre}}</td>
                 <td class="text8c" id="mod{{activo.id}}">{{activo.modelo.nombre}}</td>

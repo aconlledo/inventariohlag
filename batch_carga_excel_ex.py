@@ -5,17 +5,13 @@ import os
 import sys
 from pathlib import Path
 import shutil
-import django
 from django import setup
 from openpyxl import load_workbook
 from django.db.models import Max
-from django.db import connection
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'inventariohlag.settings')
-django.setup()
-
 from tablas.models import *
 from inventariohlag.models import *
 from inventariohlag.funciones import *
+from django.db import connection
 
 BASE_DIR = Path(__file__).resolve().parent
 sys.path.append(str(BASE_DIR))
@@ -23,10 +19,11 @@ sys.path.append(str(BASE_DIR))
 # === Configurar Django ===
 # sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(str(Path(__file__).resolve().parents[1]))
-
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "inventariohlag.settings")
+setup()
 
 # === Ruta del archivo Excel ===
-RUTA_ARCHIVO = os.path.join(".\data", "gestion_de_activos-2-copia.xlsx")  
+RUTA_ARCHIVO = os.path.join(".\data", "gestion_de_activos.xlsm")  
 
 def elimina_qr():
     qr_dir = Path(BASE_DIR / "media" / "qrcodes")
@@ -54,8 +51,6 @@ def siguiente_identificador(tipo):
 
 
 def importar_excel():
-    from django.db import connection, reset_queries
-    
     if not os.path.exists(RUTA_ARCHIVO):
         print(f"Archivo no encontrado: {RUTA_ARCHIVO}")
         return
@@ -75,7 +70,6 @@ def importar_excel():
     with connection.cursor() as cursor:
         cursor.execute("ALTER TABLE tablas_zonas AUTO_INCREMENT = 1;")
     UsuariosInventario.objects.all().delete()
-'''    
     with connection.cursor() as cursor:
         cursor.execute("ALTER TABLE tablas_usuariosinventario AUTO_INCREMENT = 1;")
     Paises.objects.all().delete()
@@ -84,7 +78,6 @@ def importar_excel():
     Ciudades.objects.all().delete()
     with connection.cursor() as cursor:
         cursor.execute("ALTER TABLE tablas_ciudades AUTO_INCREMENT = 1;")
-'''
     Edificios.objects.all().delete()
     with connection.cursor() as cursor:
         cursor.execute("ALTER TABLE tablas_edificios AUTO_INCREMENT = 1;")   
@@ -93,8 +86,8 @@ def importar_excel():
     factual = 3
     wb = load_workbook(filename=RUTA_ARCHIVO, data_only=True)
     hoja = wb.active
-    for fila in hoja.iter_rows(min_row=2, values_only=True): 
-        atype,aname,modelo,desc1,desc2,desc3,serial,manufacturer,provider,owner,invoice,pdated,pvalue,adated,accounted,uvalue,building,floor,zone,city,country,status,sdated,userinv= fila
+    for fila in hoja.iter_rows(min_row=3, values_only=True): 
+        atype,aid,specint,aname,modelo,desc1,desc2,desc3,item,serial,manufacturer,provider,owner,invoice,pdated,pvalue,adated,accounted,uvalue,location,building,floor,zone,city,country,status,sdated,userinv= fila
         if (desc1 is None):
             desc1 = ''
         else:    
@@ -107,6 +100,7 @@ def importar_excel():
             desc3 = ''
         else: 
             desc3 = desc3.strip()
+        descrip = f'Oldid={aid}:  {desc1} {desc2} {desc3}' 
         if (manufacturer in (None, 'N/A','')):
             fabricanteid = None
         else:
@@ -115,14 +109,6 @@ def importar_excel():
                 fabricanteid = Fabricantes.objects.get(nombre=manufacturer).id
             except Fabricantes.DoesNotExist:
                 fabricanteid = Fabricantes.objects.create(nombre=manufacturer).id
-        if (provider in (None, 'N/A','')):
-            providerid = None
-        else:
-            provider = provider.strip()
-            try:
-                providerid = Proveedores.objects.get(nombre=provider).id
-            except Proveedores.DoesNotExist:
-                providerid = Proveedores.objects.create(nombre=provider).id
         if (modelo is None):
             modeloid = None
         else:
@@ -185,11 +171,23 @@ def importar_excel():
             atype = atype.strip()
             atypeid = next((i for i, (_, nombre) in enumerate(TiposActivos.TIPOS) if nombre == atype), None)
             newid = siguiente_identificador(atypeid)
+        if (aid is not None):   
+            aid = aid.strip()
+        if (specint is None):  
+            spec = None
+        else:
+            spec = str(specint) 
+            spec = spec.strip()
         if (owner is None):  
             ownerid = None
         else: 
             owner = owner.strip()
             ownerid = next((i for i, (_, nombre) in enumerate(Owners.OWNERS) if nombre == owner), None)
+##       if (location is None): Location no se usara   
+##            locationid = None
+##        else:
+##            location = location.strip()
+##            locationid = next((i for i, (_, nombre) in enumerate(Locations.LOCATIONS) if nombre == location), None)
         if (status is None):   
             statusid = None
         else:
@@ -199,12 +197,10 @@ def importar_excel():
         pdate = fecha_str_to_sql(pdated)
         sdate = fecha_str_to_sql(sdated)
         try:
-            reset_queries()
-            Activos.objects.create(id=None,tipo=atypeid,newid=newid,nombre_id=nomactivoid,modelo_id=modeloid,fabricante_id=fabricanteid,desc1=desc1,desc2=desc2,desc3=desc3,
-                                    serial=serial,proveedor_id=providerid,owner=ownerid,factura=invoice,fcompra=pdate,vcompra=pvalue,factivacion=adate,
-                                    accounted=accounted,vactual=uvalue,building_id=buildingid,floor=floor,zona_id=zonaid,city_id=cityid,country_id=countryid,
-                                    estado=statusid,festado=sdate,usuarioinv_id=usuarioid) 
-            print(connection.queries[-1]['sql'])
+            Activos.objects.create(tipo=atypeid,newid=newid,nombre_id=nomactivoid,modelo_id=modeloid,fabricante_id=fabricanteid,detalle=descrip,
+                                serial=serial,proveedor_id=provider,owner=ownerid,factura=invoice,fcompra=pdate,vcompra=pvalue,factivacion=adate,
+                                accounted=accounted,vactual=uvalue,building_id=buildingid,floor=floor,zona_id=zonaid,city_id=cityid,country_id=countryid,
+                                estado=statusid,festado=sdate,usuarioinv_id=usuarioid)  
             total += 1        
             print(f"Fila {factual} Ingresada. {fila}")                     
         except Exception as e:
