@@ -45,11 +45,43 @@ def test(request):
 def en_desarrollo(request):
     return render(request, '204.html')
 
+
 @login_required(login_url='/login')
-def activos(request):
+def activos_filtrar(request,info):
+     
+    if (request.method == 'GET'):
+        persona = request.user.persona
+        if (info == 0):
+            titulo = "Assets Report"
+            
+            accion = 'activos_listar'
+        else:
+            titulo = "QR Codes Report"
+            accion = 'qr_listar'
+        areas = NombresAreas.objects.all().order_by('nombre')
+        paises = Paises.objects.filter(
+            id__in=Areas.objects.filter(areaname_id=persona.area_id).values_list('pais_id', flat=True)
+            ).order_by('nombre')
+        ciudades =  Ciudades.objects.filter(pais_id=persona.pais_id).order_by('nombre')
+        if (request.user.is_superuser):
+            if (persona.tipoactivo == TiposActivos.TODOS):
+                tiposactivos = TiposActivos.get_choices(exclude=TiposActivos.TODOS)
+            else:
+                tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
+        else:
+            tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
+#        print(str(activos.query))
+        return render(request,'activos_filtrar.html', {'persona': persona, 'tiposactivos': tiposactivos, 'areas': areas, 'paises': paises, 'ciudades': ciudades, 
+                                                       'accion': accion, 'titulo': titulo, 'info': info})
+    else:
+        return render(request, '404.html')    
+
+
+@login_required(login_url='/login')
+def activos_listar(request):
 #    if not request.user.is_superuser:
 #        return render(request, '404.html')
-    if (request.method == 'GET'):
+    if (request.method == 'POST'):
         persona = request.user.persona
         owners = Owners.OWNERS
         contabilizados = Accounted.ACCOUNTED
@@ -63,21 +95,12 @@ def activos(request):
         nombresactivos = NombresActivos.objects.all().order_by('nombre')
         zonas = Zonas.objects.all().order_by('nombre')
         usuariosinv = UsuariosInventario.objects.all().order_by('nombre')
-        if (request.user.is_superuser):
-            if (persona.tipoactivo == TiposActivos.TODOS):
-                tiposactivos = TiposActivos.get_choices(exclude=TiposActivos.TODOS)
-                tipos_activos = [t[0] for t in TiposActivos.get_choices(exclude=TiposActivos.TODOS)]
-            else:
-                tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
-                tipos_activos = [t[0] for t in TiposActivos.get_choices(include=persona.tipoactivo)]
-            filtro = Q(tipo__in=tipos_activos)
-            activos = Activos.objects.filter(filtro).order_by('tipo','newid')
-        else:
-            tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
-            paises_areas = Paises.objects.filter(areas__id=persona.area_id)
-            filtro = Q(country__in=paises_areas)
-            activos = Activos.objects.filter(filtro,tipo=persona.tipoactivo).order_by('tipo','newid')
-#        print(str(activos.query))
+        tipo = request.POST.get('tipo')
+        ciudad = request.POST.get('ciudad')
+        filtro = Q(tipo=tipo) & Q(city_id=ciudad)
+        activos = Activos.objects.filter(filtro).order_by('tipo','newid')
+        tiposactivos = TiposActivos.get_choices(include=tipo)
+        print(str(activos.query))
         return render(request,'activos_listar.html', {'activos': activos,'owners': owners,'edificios': edificios,'ciudades': ciudades,'paises': paises,
                                                     'tiposactivos': tiposactivos,'estados': estados,'modelos': modelos,
                                                     'fabricantes': fabricantes,'nombresactivos': nombresactivos,'proveedores': proveedores,'zonas': zonas,
@@ -238,7 +261,7 @@ def modificaractivo(request):
 
 
 @login_required(login_url='/login')
-def detalle_activo_qr(request, token):
+def qr_detalle(request, token):
     from urllib.parse import unquote
     from django.core import signing
     from django.core.signing import SignatureExpired, BadSignature
@@ -284,30 +307,7 @@ def ver_qr(request):
 
 
 @login_required(login_url='/login')
-def activos_qr_filtrar(request):
-     
-    if (request.method == 'GET'):
-        persona = request.user.persona
-        areas = NombresAreas.objects.all().order_by('nombre')
-        paises = Paises.objects.filter(
-            id__in=Areas.objects.filter(areaname_id=persona.area_id).values_list('pais_id', flat=True)
-            ).order_by('nombre')
-        ciudades =  Ciudades.objects.filter(pais_id=persona.pais_id).order_by('nombre')
-        if (request.user.is_superuser):
-            if (persona.tipoactivo == TiposActivos.TODOS):
-                tiposactivos = TiposActivos.get_choices(exclude=TiposActivos.TODOS)
-            else:
-                tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
-        else:
-            tiposactivos = TiposActivos.get_choices(include=persona.tipoactivo)
-#        print(str(activos.query))
-        return render(request,'activos_qr_filtrar.html', {'persona': persona, 'tiposactivos': tiposactivos, 'areas': areas, 'paises': paises, 'ciudades': ciudades})
-    else:
-        return render(request, '404.html')    
-
-
-@login_required(login_url='/login')
-def activos_qr_listar(request):
+def qr_listar(request):
      
     if (request.method == 'POST'):
         tipo = request.POST.get('tipo')
@@ -317,7 +317,7 @@ def activos_qr_listar(request):
         fcol = request.POST.get('fcol')
         try: 
             frow = int(frow)
-        except:
+        except: 
             frow = 1
         if not (1 <= frow <= 8):
             frow = 1
@@ -328,16 +328,12 @@ def activos_qr_listar(request):
         if not (1 <= fcol <= 3):
             fcol = 1
         fcell = 3 * (frow -  1 ) + fcol    
-        filters = {}
-        if is_valid(tipo):
-            filters['tipo'] = tipo
-        if is_valid(pais):
-            filters['country_id'] = pais
-        if is_valid(ciudad):
-            filters['city_id'] = ciudad
-        activos = Activos.objects.filter(**filters).order_by('tipo','newid')
+        tipo = request.POST.get('tipo')
+        ciudad = request.POST.get('ciudad')
+        filtro = Q(tipo=tipo) & Q(city_id=ciudad)
+        activos = Activos.objects.filter(filtro).order_by('tipo','newid')
 #        print(str(activos.query))
-        return render(request,'activos_qr_listar.html', {'activos': activos, 'fcell': fcell})
+        return render(request,'qr_listar.html', {'activos': activos, 'fcell': fcell})
     else:
         return render(request, '404.html')    
 

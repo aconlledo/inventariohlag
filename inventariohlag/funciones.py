@@ -55,8 +55,8 @@ class MensajesMail:
 class Constantes:
     ESPANOL = 0
     INGLES = 1 
-    DEFAULTCOUNTRY = 1    # Viene del id de la tabla tablas_ciudades
-    DEFAULTCITY = 1    # Viene del id de la tabla tablas_comunas
+    DEFAULTCOUNTRY = 1    # Viene del id de la tabla tablas_paises
+    DEFAULTCITY = 1    # Viene del id de la tabla tablas_ciudades
     TRANSFERENCIA = 1
     MAIL_ADMIN = 'aconlledo@vilco.cl'
     URL_SERVERPROD = 'http://127.0.0.1'
@@ -124,7 +124,7 @@ class AccionesCrud:
 
 
 def is_valid(value):
-    return value not in [None, '', 'null']
+    return value not in [None, '', 'null', 'N/A']
     
 def number_unformat(nump,formato=Constantes.ESPANOL):
     

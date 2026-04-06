@@ -7,9 +7,10 @@ from pathlib import Path
 import shutil
 import django
 from django import setup
+from django.db import connection, reset_queries
 from openpyxl import load_workbook
 from django.db.models import Max
-from django.db import connection
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'inventariohlag.settings')
 django.setup()
 
@@ -26,7 +27,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 
 # === Ruta del archivo Excel ===
-RUTA_ARCHIVO = os.path.join(".\data", "gestion_de_activos-2-copia.xlsx")  
+RUTA_ARCHIVO = os.path.join(".\data", "Gestion_de_Activos_Final.xlsx")  
 
 def elimina_qr():
     qr_dir = Path(BASE_DIR / "media" / "qrcodes")
@@ -53,15 +54,8 @@ def siguiente_identificador(tipo):
     return maximo + 1
 
 
-def importar_excel():
-    from django.db import connection, reset_queries
-    
-    if not os.path.exists(RUTA_ARCHIVO):
-        print(f"Archivo no encontrado: {RUTA_ARCHIVO}")
-        return
-    Activos.objects.all().delete()
-    with connection.cursor() as cursor:
-        cursor.execute("ALTER TABLE hlag_activos AUTO_INCREMENT = 1;")
+def reset_tablas():
+
     Modelos.objects.all().delete()
     with connection.cursor() as cursor:
         cursor.execute("ALTER TABLE tablas_modelos AUTO_INCREMENT = 1;")
@@ -75,6 +69,9 @@ def importar_excel():
     with connection.cursor() as cursor:
         cursor.execute("ALTER TABLE tablas_zonas AUTO_INCREMENT = 1;")
     UsuariosInventario.objects.all().delete()
+    Edificios.objects.all().delete()
+    with connection.cursor() as cursor:
+        cursor.execute("ALTER TABLE tablas_edificios AUTO_INCREMENT = 1;") 
 '''    
     with connection.cursor() as cursor:
         cursor.execute("ALTER TABLE tablas_usuariosinventario AUTO_INCREMENT = 1;")
@@ -85,119 +82,107 @@ def importar_excel():
     with connection.cursor() as cursor:
         cursor.execute("ALTER TABLE tablas_ciudades AUTO_INCREMENT = 1;")
 '''
-    Edificios.objects.all().delete()
-    with connection.cursor() as cursor:
-        cursor.execute("ALTER TABLE tablas_edificios AUTO_INCREMENT = 1;")   
-    elimina_qr()     
+    
+def importar_excel(hoja):    
     total = 0
-    factual = 3
-    wb = load_workbook(filename=RUTA_ARCHIVO, data_only=True)
-    hoja = wb.active
-    for fila in hoja.iter_rows(min_row=2, values_only=True): 
+    factual = 2
+    print(f"Procesando Hoja {hoja.title}.")
+    for fila in hoja.iter_rows(min_row=2, max_col=24, values_only=True): 
         atype,aname,modelo,desc1,desc2,desc3,serial,manufacturer,provider,owner,invoice,pdated,pvalue,adated,accounted,uvalue,building,floor,zone,city,country,status,sdated,userinv= fila
-        if (desc1 is None):
-            desc1 = ''
-        else:    
-            desc1 = desc1.strip()
-        if (desc2 is None):   
-            desc2 = ''
-        else: 
-            desc2 = desc2.strip()
-        if (desc3 is None):   
-            desc3 = ''
-        else: 
-            desc3 = desc3.strip()
-        if (manufacturer in (None, 'N/A','')):
-            fabricanteid = None
-        else:
-            manufacturer = manufacturer.strip()
+        desc1 = str(desc1).strip() if desc1 is not None else ""
+        desc2 = str(desc2).strip() if desc2 is not None else ""
+        desc3 = str(desc3).strip() if desc3 is not None else ""
+        if (is_valid(manufacturer)):
+            manufacturer = str(manufacturer).strip()
             try:
                 fabricanteid = Fabricantes.objects.get(nombre=manufacturer).id
             except Fabricantes.DoesNotExist:
                 fabricanteid = Fabricantes.objects.create(nombre=manufacturer).id
-        if (provider in (None, 'N/A','')):
-            providerid = None
         else:
-            provider = provider.strip()
+            fabricanteid = None
+        if (is_valid(provider)):
+            provider = str(provider).strip()
             try:
                 providerid = Proveedores.objects.get(nombre=provider).id
             except Proveedores.DoesNotExist:
                 providerid = Proveedores.objects.create(nombre=provider).id
-        if (modelo is None):
-            modeloid = None
         else:
-            modelo = modelo.strip()
+            providerid = None
+        if (is_valid(modelo)):
+            modelo = str(modelo).strip()
             try:
                 modeloid = Modelos.objects.get(nombre=modelo).id
             except Modelos.DoesNotExist:
                 modeloid = Modelos.objects.create(nombre=modelo,fabricante_id=fabricanteid).id
-        if (aname is None):  
-            nomactivoid = None
-        else:      
+        else:
+            modeloid = None
+        if (is_valid(aname)):  
             aname = aname.strip()
             try:
                 nomactivoid = NombresActivos.objects.get(nombre=aname).id
             except NombresActivos.DoesNotExist:
                 nomactivoid = NombresActivos.objects.create(nombre=aname).id
-        if (zone is None):     
-            zonaid = None
-        else:     
+        else:      
+            nomactivoid = None
+        if (is_valid(zone)):     
             zone = zone.strip()
             try:
                 zonaid = Zonas.objects.get(nombre=zone).id
             except Zonas.DoesNotExist:
                 zonaid = Zonas.objects.create(nombre=zone).id
-        if (userinv in (None, 'N/A')):
-            usuarioid = None
-        else:
+        else:     
+            zonaid = None
+        if (is_valid(userinv)):
             try:
                 usuarioid = UsuariosInventario.objects.get(nombre=userinv).id
             except UsuariosInventario.DoesNotExist:
                 usuarioid = UsuariosInventario.objects.create(nombre=userinv).id 
-        if (country is None):     
-            countryid = None
-        else:     
+        else:
+            usuarioid = None
+        if (is_valid(country)):     
             country = country.strip()
             try:
-                countryid = Paises.objects.get(nombre=country).id
+                countryid = Paises.objects.get(codigo=country).id
             except Paises.DoesNotExist:
-                countryid = Paises.objects.create(nombre=country).id                
-        if (city is None):     
-            cityid = None
+                countryid = Paises.objects.create(nombre=country,codigo=country).id                
         else:     
+            countryid = '1'
+        if (is_valid(city)):     
             city = city.strip()
             try:
-                cityid = Ciudades.objects.get(nombre=city).id
+                cityid = Ciudades.objects.get(codigo=city).id
             except Ciudades.DoesNotExist:
-                cityid = Ciudades.objects.create(nombre=city,pais_id=countryid).id                  
-        if (building is None):     
-            buildingid = None
+                cityid = Ciudades.objects.create(nombre=city,pais_id=countryid,codigo=city).id                  
         else:     
+            cityid = '1'
+        if (is_valid(building)):     
             building = building.strip()
             try:
                 buildingid = Edificios.objects.get(nombre=building).id
             except Edificios.DoesNotExist:
                 buildingid = Edificios.objects.create(nombre=building,pais_id=countryid,ciudad_id=cityid).id                   
-        accounted = '0' if accounted in (None, 'N/A') else '1'
-        if (atype is None):   
-            atypeid = 1
-        else:
+        else:     
+            buildingid = None
+        accounted = '1' if is_valid(accounted) else '0'
+        if (is_valid(atype)):   
             atype = atype.strip()
             atypeid = next((i for i, (_, nombre) in enumerate(TiposActivos.TIPOS) if nombre == atype), None)
             newid = siguiente_identificador(atypeid)
-        if (owner is None):  
-            ownerid = None
-        else: 
+        else:
+            atypeid = 1
+        if (is_valid(owner)):  
             owner = owner.strip()
             ownerid = next((i for i, (_, nombre) in enumerate(Owners.OWNERS) if nombre == owner), None)
-        if (status is None):   
-            statusid = None
-        else:
+        else: 
+            ownerid = None
+        if (is_valid(status)):   
             status = status.strip()
             statusid = next((i for i, (_, nombre) in enumerate(Estados.ESTADOS) if nombre == status), None)
-        adate = fecha_str_to_sql(adated)
-        pdate = fecha_str_to_sql(pdated)
-        sdate = fecha_str_to_sql(sdated)
+        else:
+            statusid = Estados.ACTIV
+        adate = fecha_str_to_sql(adated) if adated is not None else fecha_de_hoy_sql()
+        pdate = fecha_str_to_sql(pdated) if pdated is not None else fecha_de_hoy_sql()
+        sdate = fecha_str_to_sql(sdated) if sdated is not None else fecha_de_hoy_sql()
         try:
             reset_queries()
             Activos.objects.create(id=None,tipo=atypeid,newid=newid,nombre_id=nomactivoid,modelo_id=modeloid,fabricante_id=fabricanteid,desc1=desc1,desc2=desc2,desc3=desc3,
@@ -210,9 +195,21 @@ def importar_excel():
         except Exception as e:
             print(f'Error en Fila {factual} = '+str(e))   
         factual += 1                     
-    print(f"Se Ingresaron {total} filas.")
+    print(f"En Hoja {hoja.title} Se Ingresaron {total} filas.")
 
 
 if __name__ == "__main__":
-    importar_excel()
+    if not os.path.exists(RUTA_ARCHIVO):
+        print(f"Archivo no encontrado: {RUTA_ARCHIVO}")
+    else:
+#        reset_tablas()
+        elimina_qr() 
+        Activos.objects.all().delete()
+        with connection.cursor() as cursor:
+           cursor.execute("ALTER TABLE hlag_activos AUTO_INCREMENT = 1;")
+        wb = load_workbook(filename=RUTA_ARCHIVO, data_only=True)
+        hoja = wb.worksheets[0] 
+        importar_excel(hoja)
+        hoja = wb.worksheets[1] 
+        importar_excel(hoja)
 

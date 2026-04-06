@@ -52,12 +52,12 @@ function PrepararRegistro(id){
 function CamposValidos(){
     var nombre = allTrim($('#nombre').val());
     if (nombre == "") 	{
-        mostrarMensaje("Must indicate City Name",MSG_STOP);
+        mostrarMensaje("Must indicate Location Name",MSG_STOP);
         return false;
         }
     texto = allTrim($('#codigo').val());
     if (texto == "") 	{
-        mostrarMensaje("Must indicate ISO Code",MSG_STOP);
+        mostrarMensaje("Must indicate Code",MSG_STOP);
         return false;
         }
     return true;
@@ -71,7 +71,7 @@ function EditarRegistro(id){
     PrepararRegistro(id);
 
     $("#diagedit").dialog({
-        title: "Edit City",
+        title: "Edit Location",
         buttons: [
             {
                 text: "Save",
@@ -103,7 +103,7 @@ function AgregarRegistro(){
     $('#id').val('');
 
     $("#diagedit").dialog({
-        title: "Add City",
+        title: "Add Location",
         buttons: [
             {
                 text: "Save",
@@ -136,13 +136,13 @@ function BorrarRegistro(id){
     PrepararRegistro(id);
 
     $("#diagedit").dialog({
-        title: "Delete City",
+        title: "Delete Location",
         buttons: [
             {
                 text: "Delete",
                 click: function() {
                     $( this ).dialog("close");
-                    confirmarMensaje("The City will be removed from the Database.",EnviaPeticionAjax,ELIMINAR_REG,id);
+                    confirmarMensaje("The Location will be removed from the Database.",EnviaPeticionAjax,ELIMINAR_REG,id);
                     },
                 class:"ui-corner-all", style:"color:Red" 
             },

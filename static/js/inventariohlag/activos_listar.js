@@ -495,8 +495,8 @@ function Crear_DataTable() {
         bJQueryUI: true,
         iDisplayLength: 25,
         columnDefs: [
-            { orderable: false, targets: [7] },
-            { searchable: false, targets: [0,7] }
+            { orderable: false, targets: [0,8] },
+            { searchable: false, targets: [0,8] }
             ]
         });
 

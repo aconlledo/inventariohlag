@@ -8,7 +8,7 @@ class Owners:
     OWNERS = [
         (OWN, 'OWN'),
         (LEASE, 'LEASE'),
-        (HLAGCL, 'Hapag-Lloyd'),
+        (HLAGCL, 'Hapag-Lloyd Chile SpA'),
         (SITA, 'SITA'),
         ]  
     

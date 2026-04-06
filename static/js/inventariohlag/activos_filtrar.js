@@ -2,6 +2,26 @@ $(document).ready(function(){
 
   $('#Modalfind').modal('show');
 
+  $('#formqr').on('submit', function(event) {
+    event.preventDefault(); 
+    const form = this;
+    $('#Modalfind').modal('hide');
+    $('#Modalfind').on('hidden.bs.modal', function () {
+        mensajeWorking();
+
+        setTimeout(() => {
+            form.submit();
+        }, 50);
+    });
+  });
+  
+  if ($('#info').val() == '1') {
+    $('#divfcell').show();
+    } 
+  else {
+    $('#divfcell').hide();    
+    }
+
   $('#area').on("change", function(){
       Cargar_Paises();
       });	
@@ -10,15 +30,7 @@ $(document).ready(function(){
       Cargar_Ciudades();
       });	
 
-  $('#btnsubmit').on('submit', function(event) {
-    event.preventDefault(); 
-    mensajeWorking();
-    setTimeout(() => {
-        this.submit();
-        }, 50);
-      });
-    
-  });
+  }); 
 //
 // ********************************
 //          Funciones

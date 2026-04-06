@@ -13,7 +13,7 @@ $(document).ready(function(){
 
   $('#newFilter').on('click', function(e) {
     e.preventDefault(); 
-    window.location.href = '/qr_filtrar'; 
+    window.location.href = '/activos_filtrar/1';  
     });
 
   $('#printBtn').on('click', function () {
@@ -108,7 +108,7 @@ $(document).ready(function(){
       }, 200);
   });
 
-  });
+});
     
 //
 // ********************************

@@ -7,7 +7,7 @@
 {% block content %}
 
 <!-- Custom JS -->
-<script type="text/javascript" src="{% static 'js/inventariohlag/activos.js' %}"></script>  
+<script type="text/javascript" src="{% static 'js/inventariohlag/activos_listar.min.js' %}"></script>  
 
 <div class="container mt-4">
  
@@ -18,7 +18,7 @@
             <div class="table-responsive">
                 <table style="width:100%">
                     <tr>
-                        <td width="90%" class="titform20">Assets</td>
+                        <td width="90%" class="titform20">Assets Report</td>
                         <td width="10%" class="text8c">
                             <button class='btn btn-sm btn-outline-info tip' title='Add Asset' onClick='AgregarRegistro()' >
                                 <i class='bi-solid bi-plus'></i>
@@ -56,7 +56,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="tit10lb">Active Type:</label>
+                                            <label class="tit10lb">Asset Type:</label>
                                             <div class="input-group">                                
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-card-list"></i></span>
@@ -71,7 +71,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="tit10lb">Active Identifier:</label>
+                                            <label class="tit10lb">Asset Identifier:</label>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
@@ -344,7 +344,7 @@
                                 <div class="row">
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label class="tit10lb">City:</label>
+                                            <label class="tit10lb">Location:</label>
                                             <div class="input-group">                                
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-card-list"></i></span>

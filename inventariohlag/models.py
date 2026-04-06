@@ -155,7 +155,7 @@ class Activos(models.Model):
             ("ID #: ", identificador),
             ("Name: ", nombre_val),
             ("Serial: ", serial_val),
-            ("City: ", city_val),
+            ("Location: ", city_val),
             ("Building: ", building_val),
         ]
 
@@ -216,7 +216,7 @@ class Activos(models.Model):
         <div class='text8l'><strong>ID #:</strong> {tipo}-{self.newid}</div>
         <div class='text8l'><strong>Name:</strong> {self.nombre.nombre}</div>
         <div class='text8l'><strong>Serial:</strong> {self.serial}</div>
-        <div class='text8l'><strong>City:</strong> {self.city.nombre}</div>
+        <div class='text8l'><strong>Location:</strong> {self.city.nombre}</div>
         <div class='text8l'><strong>Building:</strong> {self.building.nombre}</div>
         """
         
@@ -225,7 +225,7 @@ class Activos(models.Model):
             <div class='text8l'><strong>ID #:</strong> {tipo}-{self.newid}</div>
             <div class='text8l'><strong>Name:</strong> {self.nombre.nombre}</div>
             <div class='text8l'><strong>Serial:</strong> {self.serial}</div>
-            <div class='text8l'><strong>City:</strong> {self.city.nombre}</div>
+            <div class='text8l'><strong>Location:</strong> {self.city.nombre}</div>
             <div class='text8l'><strong>Building:</strong> {self.building.nombre}</div>
         </div>
         """
@@ -240,7 +240,7 @@ class Areas(models.Model):
         ordering = ['areaname','pais']
 
     def __str__(self): 
-        return self.areaname.nombre if self.pais else "Sin país"
+        return self.areaname.nombre if self.pais else "No Country"
     
     def get_area_paises(self):
         return Areas.objects.filter(

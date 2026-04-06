@@ -5,7 +5,7 @@
             <tr>
                 <th width="10%" class="tdtit10">Key</th>
                 <th width="40%" class="tdtit10">Building</th>
-                <th width="20%" class="tdtit10">City</th>
+                <th width="20%" class="tdtit10">Location</th>
                 <th width="20%" class="tdtit10">Country</th>
                 <th width="10%" class="tdtit10">Action</th>
             </tr>
@@ -23,10 +23,10 @@
                 </td>
                 <td class="text8c"> 
                 {% if request.user.is_superuser %}
-                    <button class='btn btn-sm btn-outline-primary tip' title='Edit City' onClick='EditarRegistro({{edificio.id|stringformat:"d"}})'>
+                    <button class='btn btn-sm btn-outline-primary tip' title='Edit Location' onClick='EditarRegistro({{edificio.id|stringformat:"d"}})'>
                         <i class='bi-solid bi-pencil'></i>
                     </button>
-                    <button class='btn btn-sm btn-outline-danger tip' title='Delete City' onClick='BorrarRegistro({{edificio.id|stringformat:"d"}})'>
+                    <button class='btn btn-sm btn-outline-danger tip' title='Delete Location' onClick='BorrarRegistro({{edificio.id|stringformat:"d"}})'>
                         <i class='bi-solid bi-trash'></i>
                     </button>
                 {% endif %}

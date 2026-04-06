@@ -167,7 +167,7 @@ function PrepararRegistro(id){
 function CamposValidos(){
     var newid = allTrim($('#newid').val());
     if (newid == "") 	{
-        mostrarMensaje("Must Indicate Active Identifier!!!",MSG_STOP);
+        mostrarMensaje("Must Indicate Asset Identifier!",MSG_STOP);
         return false;
         }
     return true;

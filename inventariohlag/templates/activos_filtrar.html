@@ -2,24 +2,21 @@
 
 {% load static %}
 
-{% block title %}Inventory: QR Print Filter{% endblock %}
+{% block title %}Inventory: Search Filter{% endblock %}
 
 {% block content %}
 
-<!-- Custom CSS -->
-<link rel='stylesheet' type='text/css' href="{% static 'css/activos_qr_listar.css' %}" >
 <!-- Custom JS -->
-<script type="text/javascript" src="{% static 'js/inventariohlag/activos_qr_filtrar.js' %}"></script>  
+<script type="text/javascript" src="{% static 'js/inventariohlag/activos_filtrar.min.js' %}"></script>  
 
 
 {% csrf_token %}
 
 <div class="container mt-4">
     <div class="row">
-        <h2>Print QR Codes</h2>
+        <h2>{{titulo}}</h2>
         <div class="toolbar">
             <div style="flex:1"></div>
-            <button id="printBtn" class="btn btn-primary" disabled>Find Selected</button>
         </div>
     </div>
 </div>
@@ -38,14 +35,14 @@
                         <div class="card-body p-2 p-lg-2 text-black myform">
                             <div class="d-flex align-items-center mb-3 pb-1">
                                 <img src="{% static 'imagenes/logo.jpg' %}" width="100" style="height: auto;" class="me-3" />
-                                <h4 class="mb-0">Filter to Print QR</h4>
+                                <h4 class="mb-0">Search Filter</h4>
                             </div>
-                            <form method="POST" action="/qr_listar/" id="formqr" name="formqr">
+                            <form method="POST" action="/{{ accion }}/" id="formqr" name="formqr"> 
                                 {% csrf_token %}
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="tit10lb">Active Type:</label>
+                                            <label class="tit10lb">Asset Type:</label>
                                             <div class="input-group">                                
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-card-list"></i></span>
@@ -66,7 +63,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="tit10lb">Areas:</label>
+                                            <label class="tit10lb">Area:</label>
                                             <div class="input-group">                                
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-card-list"></i></span>
@@ -114,7 +111,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="tit10lb">City:</label>
+                                            <label class="tit10lb">Location:</label>
                                             <div class="input-group">                                
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-card-list"></i></span>
@@ -130,7 +127,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <input type="hidden" name="info" id="info" value="{{ info }}" />
+                                <div class="row" id="divfcell" name="divfcell" style="display:none;">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="tit10lb">First Label:</label>
