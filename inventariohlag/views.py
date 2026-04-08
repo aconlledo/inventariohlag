@@ -100,7 +100,7 @@ def activos_listar(request):
         filtro = Q(tipo=tipo) & Q(city_id=ciudad)
         activos = Activos.objects.filter(filtro).order_by('tipo','newid')
         tiposactivos = TiposActivos.get_choices(include=tipo)
-        print(str(activos.query))
+#       print(str(activos.query))
         return render(request,'activos_listar.html', {'activos': activos,'owners': owners,'edificios': edificios,'ciudades': ciudades,'paises': paises,
                                                     'tiposactivos': tiposactivos,'estados': estados,'modelos': modelos,
                                                     'fabricantes': fabricantes,'nombresactivos': nombresactivos,'proveedores': proveedores,'zonas': zonas,
@@ -280,7 +280,18 @@ def qr_detalle(request, token):
     contabilizados = Accounted.ACCOUNTED
     estados = Estados.ESTADOS
     tiposactivos = TiposActivos.get_choices(exclude=TiposActivos.TODOS)
-    return render(request, 'activos_detalle.html', {'activo': activo,'owners': owners,'tiposactivos': tiposactivos,'contabilizados': contabilizados,'estados': estados})
+    return render(request, 'qr_detalle_activo.html', {'activo': activo,'owners': owners,'tiposactivos': tiposactivos,'contabilizados': contabilizados,'estados': estados})
+
+
+def qr_detalle_test(request):
+
+    id = request.GET.get('id')
+    activo = get_object_or_404(Activos, id=id)
+    owner = Owners.OWNERS[int(activo.owner)][1]
+    contabilizados = Accounted.ACCOUNTED
+    estados = Estados.ESTADOS
+    tiposactivos = TiposActivos.get_choices(exclude=TiposActivos.TODOS)
+    return render(request, 'qr_detalle_activo.html', {'activo': activo,'owner': owner,'tiposactivos': tiposactivos,'contabilizados': contabilizados,'estados': estados})
 
 
 @login_required(login_url='/login')
@@ -297,7 +308,7 @@ def ver_qr(request):
         except Exception as e:
             context['message'] = f"{e}"
         else:
-            tipo = TiposActivos.TIPOS[int(activo.tipo)][1]
+#            tipo = TiposActivos.TIPOS[int(activo.tipo)][1]
             context['status'] = 200
             context['qr_url'] = f"{settings.SITE_URL}{settings.MEDIA_URL}{activo.qr}"
 #        print(context)

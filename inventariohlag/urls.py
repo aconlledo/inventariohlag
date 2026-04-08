@@ -35,10 +35,10 @@ urlpatterns = [
     path('checklastid/', views.checklastid, name='checklastid'),  
     path('modificaractivo/', views.modificaractivo, name='modificaractivo'), 
     path('areas_listar/', views.areas_listar, name='areas_listar'), 
-    path('qr_detalle/<path:token>', views.qr_detalle, name='qr_detalle'),         
     path('qr_listar/', views.qr_listar, name='qr_listar'),     
-#    path('qr_filtrar/', views.activos_qr_filtrar, name='activos_qr_filtrar'),     
     path('ver_qr/', views.ver_qr, name='ver_qr'),  
+    path('qr_detalle/<path:token>', views.qr_detalle, name='qr_detalle'),         
+    path('qr_detalle_test/', views.qr_detalle_test, name='qr_detalle_test'),   
         
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
 

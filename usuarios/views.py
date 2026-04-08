@@ -28,6 +28,7 @@ def login_general(request):
     if (request.method == 'POST'):
         username = request.POST.get('username')
         password = request.POST.get('password')
+        next_url = request.POST.get('next_url')
         user = authenticate(request,username=username, password=password)
         if user is None :
             context['status'] = 401 
@@ -50,6 +51,9 @@ def login_general(request):
                     else:
                         context['status'] = 201 
                         context['message1'] = 'You must change your password..'
+#                    if (next_url is not None and next_url != ''):
+#                        context['url'] = next_url    
+#                    else:   
                     if (persona.perfil == PerfilesUsuarios.USUARIO):
                         context['url'] = '/usuarios/login_usuario/'  
                     else:

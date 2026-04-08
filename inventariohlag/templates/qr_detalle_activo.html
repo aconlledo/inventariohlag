@@ -1,13 +1,14 @@
 {% extends 'home_admin.html' %}
 
 {% load static %}
+{% load l10n %}
 
 {% block title %}Inventory: Asset Details{% endblock %}
 
 {% block content %}
 
     <!-- Custom JS -->
-<script type="text/javascript" src="{% static 'js/inventariohlag/activos_detalle.min.js' %}"></script>  
+<script type="text/javascript" src="{% static 'js/inventariohlag/qr_detalle_activo.min.js' %}"></script>  
 
 
  <div id="diagview">
@@ -87,7 +88,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
                                                 </div>
-                                                <input type="text" value="{{activo.sku}}" size="45" class="form-control w-50 text8l  inputdata" />
+                                                <input type="text" value="{{ activo.sku|default:'' }}" size="45" class="form-control w-50 text8l  inputdata" />
                                             </div>
                                       </div> 
                                     </div>
@@ -185,7 +186,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                                                 </div>
-                                                <input type="text" value="{{ activo.fcompra }}" size="20" class="form-control mt-0 w-50 text8l inputdata" />
+                                                <input type="text" value="{{ activo.fcompra|date:'d-m-Y'|default:'' }}" size="20" class="form-control mt-0 w-50 text8l inputdata" />
                                             </div>
                                         </div> 
                                     </div>
@@ -196,7 +197,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
                                                 </div>
-                                                <input type="text" value="{{ activo.vcompra }}" size="20" class="form-control mt-0 w-50 text8l inputdata" />
+                                                <input type="text" value="{{ activo.vcompra|localize|default:'' }}" size="20" class="form-control mt-0 w-50 text8l inputdata" />
                                             </div>
                                         </div>
                                     </div>
@@ -209,11 +210,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-card-list"></i></span>
                                                 </div>
-                                                {% for code, name in owners %}
-                                                    {% if code == activo.owners %}
-                                                        <input type="text" value="{{ name }}" size="20" class="form-control w-50 text8l inputdata" />
-                                                    {% endif %}
-                                                {% endfor %}
+                                                <input type="text" value="{{ owner }}" size="20" class="form-control w-50 text8l inputdata" />
                                             </div>
                                         </div>
                                     </div>
@@ -239,7 +236,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                                                 </div>
-                                                <input type="text" value="{{ activo.factivacion }}" size="20" class="form-control mt-0 w-50 text8l inputdata" />
+                                                <input type="text" value="{{ activo.factivacion|date:'d-m-Y'|default:'' }}" size="20" class="form-control mt-0 w-50 text8l inputdata" />
                                             </div>
                                         </div> 
                                     </div>
@@ -250,7 +247,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
                                                 </div>
-                                                <input type="text" value="{{ activo.vactual }}" size="20" class="form-control mt-0 w-50 text8l inputdata" />
+                                                <input type="text" value="{{ activo.vactual|default:'' }}" size="20" class="form-control mt-0 w-50 text8l inputdata" />
                                             </div>
                                         </div>
                                     </div>
@@ -263,7 +260,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-card-list"></i></span>
                                                 </div>
-                                                <input type="text" value="{{ activo.edificio.nombre }}" size="45" class="form-control w-50 text8l  inputdata" />
+                                                <input type="text" value="{{ activo.building.nombre }}" size="45" class="form-control w-50 text8l  inputdata" />
                                             </div>
                                         </div>
                                     </div>
@@ -298,7 +295,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-card-list"></i></span>
                                                 </div>
-                                                <input type="text" value="{{ activo.ciudad.nombre }}" size="45" class="form-control w-50 text8l  inputdata" />
+                                                <input type="text" value="{{ activo.city.nombre }}" size="45" class="form-control w-50 text8l  inputdata" />
                                             </div>
                                         </div>
                                     </div>
@@ -309,7 +306,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-card-list"></i></span>
                                                 </div>
-                                                <input type="text" value="{{ activo.pais.nombre }}" size="45" class="form-control w-50 text8l  inputdata" />
+                                                <input type="text" value="{{ activo.country.nombre }}" size="45" class="form-control w-50 text8l  inputdata" />
                                             </div>
                                         </div>
                                     </div>
@@ -348,7 +345,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                                                 </div>
-                                                <input type="text" value="{{ activo.festado }}" size="12" class="form-control mt-0 w-50 text8l inputdata" />
+                                                <input type="text" value="{{ activo.festado|date:'d-m-Y'|default:'' }}" size="12" class="form-control mt-0 w-50 text8l inputdata" />
                                             </div>
                                         </div> 
                                     </div>
@@ -359,7 +356,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                                                 </div>
-                                                <input type="text" value="{{ activo.fmodifica }}" size="12" class="form-control mt-0 w-50 text8l inputdata" />
+                                                <input type="text" value="{{ activo.fmodifica|date:'d-m-Y H:i'|default:''}}" size="12" class="form-control mt-0 w-50 text8l inputdata" />
                                             </div>
                                         </div>
                                     </div> 
@@ -370,7 +367,7 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                                                 </div>
-                                                <input type="text" value="{{ activo.fingreso }}" size="12" class="form-control mt-0 w-50 text8l inputdata" />
+                                                <input type="text" value="{{ activo.fingreso|date:'d-m-Y H:i'|default:'' }}" size="12" class="form-control mt-0 w-50 text8l inputdata" />
                                             </div>
                                         </div>
                                     </div>

@@ -27,7 +27,7 @@ $(document).ready(function(){
     <html>
     <head>
         <meta charset="utf-8">
-        <title>Printing QR</title>
+        <title>QR Print Page</title>
         <style>
 
             * {
@@ -136,7 +136,8 @@ function Crear_DataTable() {
       bJQueryUI: true,
       ordering: false, 
       lengthChange: false,
-      pageLength: 8
+      pageLength: 8,
+      searching: false
     });   
     
     $(".qr-img").tooltip({ html: true });

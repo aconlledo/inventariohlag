@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Owners:
     OWN = '0'
     LEASE = '1'

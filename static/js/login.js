@@ -58,6 +58,7 @@ $(document).ready(function(){
 //
 	$('#formlogin').on('submit',function(event) {
 		var username = $('#username').val();
+		var next_url = $('#next_url').val();
 		var password = allTrim($('#claveuser').val());
 		event.preventDefault();
 		limpiarMsgModalLogin();
@@ -70,7 +71,7 @@ $(document).ready(function(){
 			efectoTemblor($('#LoginModal'));
 			}
 		else {
-			EnviarLogin();
+			EnviarLogin(next_url);
 			}
 		});
 
@@ -194,19 +195,19 @@ function limpiarCamposModalLogin() {
 	$('#claveuser').val('');
 	};
 //
-// Login
+// Login  
 //
-function EnviarLogin() {
+function EnviarLogin(next_url) {
 	var username = $('#username').val();
 	var password = allTrim($('#claveuser').val());
-
+	alert(next_url);
 	try {
 		$.ajax({
 			type: "POST",
 			async: false,
 			url: "/usuarios/login_general/", 
 			dataType: 'json',
-			data: {username: username, password: password, csrfmiddlewaretoken:  $("input[name=csrfmiddlewaretoken]").val()},
+			data: {username: username, password: password, next_url: next_url, csrfmiddlewaretoken:  $("input[name=csrfmiddlewaretoken]").val()},
 			beforeSend: function() {
 				$('#cclaveusername').val(username);
 				},

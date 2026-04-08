@@ -11,7 +11,6 @@ from django.core.files.base import ContentFile
 from PIL import Image, ImageDraw, ImageFont
 
 
-
 class Activos(models.Model):
 
     tipo = models.CharField(max_length=1,choices=TiposActivos.TIPOS,default=TiposActivos.IT)          

@@ -498,7 +498,7 @@ function Crear_DataTable() {
             { orderable: false, targets: [0,8] },
             { searchable: false, targets: [0,8] }
             ]
-        });
+        }); 
 
     $(".tip").tooltip();
     

@@ -128,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'es-ES'
+LANGUAGE_CODE = 'es-cl'
 TIME_ZONE = 'America/Santiago'
 # TIME_ZONE = 'UTC-3'
 
@@ -136,10 +136,7 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
  
-USE_DECIMAL_SEPARATOR = True
-DECIMAL_SEPARATOR = ","
 USE_THOUSAND_SEPARATOR = True
-THOUSAND_SEPARATOR = "."
 
 SITE_URL=config("SITE_URL")
 
@@ -150,7 +147,7 @@ STATIC_URL = 'static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),  os.path.join(BASE_DIR, 'media'),  
-]
+    ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
