@@ -158,12 +158,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_HOST = 'mail.vilco.cl'
-EMAIL_HOST_USER = 'aconlledo@vilco.cl'
-EMAIL_HOST_PASSWORD = 'Rocko.5862.'
-EMAIL_PORT = 587
+EMAIL_USE_TLS = config("MAIL_TLS")
+EMAIL_USE_SSL = config("MAIL_SSL")
+EMAIL_HOST = config("MAIL_HOST")
+EMAIL_HOST_USER = config("MAIL_USER")
+EMAIL_HOST_PASSWORD = config("MAIL_PASS")
+EMAIL_PORT = config("MAIL_PORT")
+
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
+# EMAIL_HOST = 'mail.vilco.cl'
+# EMAIL_HOST_USER = 'aconlledo@vilco.cl'
+# EMAIL_HOST_PASSWORD = 'Rocko.5862.'
+# EMAIL_PORT = 587
 # EMAIL_PORT = 465
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
