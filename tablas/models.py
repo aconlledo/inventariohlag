@@ -88,7 +88,7 @@ class NombresAreas(models.Model):
     nombre = models.CharField(max_length=45)
     
     class Meta:
-        db_table = "tablas_nombresareas"  
+        db_table = "tablas_nombresareas"
         ordering = ['nombre']
 
     def __str__(self):

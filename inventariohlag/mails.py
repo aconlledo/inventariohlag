@@ -33,7 +33,7 @@ def mail_cambio_clave(nombre,apellido,password,mail):
         status = 502
         mensaje = f"Email NOT sent to User: SMTP Error: {str(e)}"
     except Exception as e:
-        status = 500
+        status = 535
         mensaje = f"Email NOT sent to the User: UNKNOWN ERROR: {str(e)}"
     return status , mensaje  
 

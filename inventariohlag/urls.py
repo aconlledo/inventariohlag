@@ -39,7 +39,8 @@ urlpatterns = [
     path('ver_qr/', views.ver_qr, name='ver_qr'),  
     path('qr_detalle/<path:token>', views.qr_detalle, name='qr_detalle'),         
     path('qr_detalle_test/', views.qr_detalle_test, name='qr_detalle_test'),   
-        
+    path('excel_master/', views.excel_master, name='excel_master'),      
+    path('excel_upload/', views.excel_upload, name='excel_upload'),        
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
 
 # if settings.DEBUG:

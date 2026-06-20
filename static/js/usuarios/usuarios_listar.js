@@ -285,10 +285,10 @@ function EnviaPeticionAjax(accion,id){
 	var estado = $('#estado option:selected').val();
     var pais = $('#pais option:selected').val();
 	var tipoactivo = $('#tipoactivo option:selected').val();
-	var area = $('#area option:selected').val();
+	var area = $('#areas option:selected').val();
 	try {
 		$.ajax({
-			async: false,
+			async: false, 
 			type: "POST",
 			url: "/usuarios/usuarios_listar/",
 			data: {accion:accion, id:id, username:username, nombres:nombres, apellidos:apellidos, email:email, perfil:perfil, estado:estado, pais:pais, 

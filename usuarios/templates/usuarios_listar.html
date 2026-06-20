@@ -7,7 +7,7 @@
 {% block content %}
 
 <!-- Custom JS -->
-<script type="text/javascript" src="{% static 'js/usuarios/usuarios_listar.js' %}"></script>  
+<script type="text/javascript" src="{% static 'js/usuarios/usuarios_listar.min.js' %}"></script>  
 
 <div  class="container-xxl mt-4">
 
@@ -126,7 +126,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="bi bi-card-list"></i></span>
                                     </div>
-                                  <select required="required" class="form-control w-auto inputselect" name="area" id="area" style="font-size:11px;">  
+                                  <select required="required" class="form-control w-auto inputselect" name="areas" id="areas" style="font-size:11px;">  
                                     {% for area in areas %}
                                         <option value="{{area.id}}" class="text8l">{{area.nombre}}</option>
                                     {% endfor %}

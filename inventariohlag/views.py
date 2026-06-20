@@ -357,7 +357,7 @@ def areas_listar(request):
         areas = Areas.objects.all().order_by('areaname_id')
         paises = Paises.objects.all().order_by('nombre')
         return render(request, 'areas_listar.html', {'areas': areas, 'paises': paises, 'areasnombres': areasnombres})
-    else:
+    else: 
         accion = request.POST.get('accion')
         id = request.POST.get('id')
         pais = request.POST.get('pais')
@@ -380,4 +380,182 @@ def areas_listar(request):
         areas = Areas.objects.all().order_by('areaname_id')
         return render(request, 'areas_ajax_listar.html', {'areas': areas})
     
+def excel_master(request):
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, Protection,  Alignment, PatternFill
+    from openpyxl.worksheet.datavalidation import DataValidation
     
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Formulario"
+
+    # Fila de titulos
+    headers = ["Active Type", "Active Name", "Model", "Descriptive 1","Descriptive 2","Descriptive 3","Serial Number","Manufacturer","Provider","Owner","Invoice Number",
+               "Purchase Date","Purchase Value","Activation Date","Accounted","Update Value","Building","Floor","Zone","Location","Country","Status","Status Date","User"]
+    for col_num, header in enumerate(headers, start=1):
+        ws.cell(row=1, column=col_num, value=header)
+#    for col in range(1, len(headers) + 1):
+#        cell = ws.cell(row=1, column=col)
+#        cell.font = Font(bold=True)
+    fill_gris = PatternFill(start_color="D9D9D9", end_color="D9D9D9", fill_type="solid")
+
+    for cell in ws[1]:
+        cell.fill = fill_gris
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+        
+    # 1. Obtener opciones de Active Name    
+    opciones  = list(NombresActivos.objects.values_list('nombre', flat=True))
+    # 2. Crear hoja auxiliar
+    ws_list = wb.create_sheet(title="nactivos")
+    for i, val in enumerate(opciones , start=1):
+        ws_list[f"A{i}"] = val
+    # 3. Crear validación de datos (lista)
+    rango = f"nactivos!$A$1:$A${len(opciones )}"
+    dv = DataValidation(type="list", formula1=rango, allow_blank=False)
+    ws.add_data_validation(dv)
+    # 4. Aplicar a un rango
+    dv.add("B2:B100")
+    # 5. Ocultar hoja de Active Name 
+    ws_list.sheet_state = "hidden"
+
+    # 1. Obtener opciones de Active Model    
+    opciones  = list(Modelos.objects.values_list('nombre', flat=True))
+    # 2. Crear hoja auxiliar
+    ws_list = wb.create_sheet(title="modelac")
+    for i, val in enumerate(opciones , start=1):
+        ws_list[f"A{i}"] = val
+    # 3. Crear validación de datos (lista)
+    rango = f"modelac!$A$1:$A${len(opciones )}"
+    dv = DataValidation(type="list", formula1=rango, allow_blank=False)
+    ws.add_data_validation(dv)
+    # 4. Aplicar a un rango
+    dv.add("C2:C100")
+    # 5. Ocultar hoja de Active Model 
+    ws_list.sheet_state = "hidden"
+            
+    # 1. Obtener opciones de Fabricantes
+    opciones  = list(Fabricantes.objects.values_list('nombre', flat=True))
+    # 2. Crear hoja auxiliar
+    ws_list = wb.create_sheet(title="fabricantes")
+    for i, val in enumerate(opciones , start=1):
+        ws_list[f"A{i}"] = val
+    # 3. Crear validación de datos (lista)
+    rango = f"fabricantes!$A$1:$A${len(opciones )}"
+    dv = DataValidation(type="list", formula1=rango, allow_blank=False)
+    ws.add_data_validation(dv)
+    # 4. Aplicar a un rango (ej: columna B filas 2 a 100)
+    dv.add("H2:H100")
+    # 5. Ocultar hoja de fabricantes
+    ws_list.sheet_state = "hidden"
+
+    # 1. Obtener opciones de Proveedores
+    opciones  = list(Proveedores.objects.values_list('nombre', flat=True))
+    # 2. Crear hoja auxiliar
+    ws_list = wb.create_sheet(title="proveedores")
+    for i, val in enumerate(opciones , start=1):
+        ws_list[f"A{i}"] = val
+    # 3. Crear validación de datos (lista)
+    rango = f"proveedores!$A$1:$A${len(opciones )}"
+    dv = DataValidation(type="list", formula1=rango, allow_blank=False)
+    ws.add_data_validation(dv)
+    # 4. Aplicar a un rango (ej: columna B filas 2 a 100)
+    dv.add("I2:I100")
+    # 5. Ocultar hoja de proveedores
+    ws_list.sheet_state = "hidden"
+    
+    # 1. Obtener opciones de Edificios
+    opciones  = list(Edificios.objects.values_list('nombre', flat=True))
+    # 2. Crear hoja auxiliar
+    ws_list = wb.create_sheet(title="edificios")
+    for i, val in enumerate(opciones , start=1):
+        ws_list[f"A{i}"] = val
+    # 3. Crear validación de datos (lista)
+    rango = f"edificios!$A$1:$A${len(opciones )}"
+    dv = DataValidation(type="list", formula1=rango, allow_blank=False)
+    ws.add_data_validation(dv)
+    # 4. Aplicar a un rango (ej: columna B filas 2 a 100)
+    dv.add("Q2:Q100")
+    # 5. Ocultar hoja de edificios
+    ws_list.sheet_state = "hidden"
+    
+    # 1. Obtener opciones de Ciudades
+    opciones  = list(Ciudades.objects.values_list('nombre', flat=True))
+    # 2. Crear hoja auxiliar
+    ws_list = wb.create_sheet(title="ciudades")
+    for i, val in enumerate(opciones , start=1):
+        ws_list[f"A{i}"] = val
+    # 3. Crear validación de datos (lista)
+    rango = f"ciudades!$A$1:$A${len(opciones )}"
+    dv = DataValidation(type="list", formula1=rango, allow_blank=False)
+    ws.add_data_validation(dv)
+    # 4. Aplicar a un rango (ej: columna B filas 2 a 100)
+    dv.add("T2:T100")
+    # 5. Ocultar hoja de ciudades
+    ws_list.sheet_state = "hidden"
+    
+    # 1. Obtener opciones de Paises
+    opciones  = list(Paises.objects.values_list('nombre', flat=True))
+    # 2. Crear hoja auxiliar
+    ws_list = wb.create_sheet(title="paises")
+    for i, val in enumerate(opciones , start=1):
+        ws_list[f"A{i}"] = val
+    # 3. Crear validación de datos (lista)
+    rango = f"paises!$A$1:$A${len(opciones )}"
+    dv = DataValidation(type="list", formula1=rango, allow_blank=False)
+    ws.add_data_validation(dv)
+    # 4. Aplicar a un rango (ej: columna B filas 2 a 100)
+    dv.add("U2:U100")
+    # 5. Ocultar hoja de paises
+    ws_list.sheet_state = "hidden"
+    
+    # 1. Obtener opciones de Usuarios Inventario
+    opciones  = list(UsuariosInventario.objects.values_list('nombre', flat=True))
+    # 2. Crear hoja auxiliar
+    ws_list = wb.create_sheet(title="user_assets")
+    for i, val in enumerate(opciones , start=1):
+        ws_list[f"A{i}"] = val
+    # 3. Crear validación de datos (lista)
+    rango = f"user_assets!$A$1:$A${len(opciones )}"
+    dv = DataValidation(type="list", formula1=rango, allow_blank=False)
+    ws.add_data_validation(dv)
+    # 4. Aplicar a un rango (ej: columna B filas 2 a 100)
+    dv.add("X2:X100")
+    # 5. Ocultar hoja de user_assets
+    ws_list.sheet_state = "hidden"  
+    
+        
+    MIN_WIDTH = 20
+    MAX_WIDTH = 60
+    for col in ws.columns:
+        max_length = 0
+        col_letter = col[0].column_letter
+        for cell in col:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+        adjusted_width = max(min(max_length + 2, MAX_WIDTH), MIN_WIDTH)
+        ws.column_dimensions[col_letter].width = adjusted_width
+
+    ws.freeze_panes = "A1"
+    for row in ws.iter_rows(min_row=1, max_row=1, min_col=1, max_col=24):
+        for cell in row:
+            cell.protection = Protection(locked=True)
+    for row in ws.iter_rows(min_row=2, max_row=100, min_col=1, max_col=24):
+        for cell in row:
+            cell.protection = Protection(locked=False)   
+            
+    # 6. (Opcional) proteger hoja
+    ws.protection.sheet = True
+
+    # 7. Respuesta HTTP
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+    response['Content-Disposition'] = 'attachment; filename="formulario.xlsx"'
+
+    wb.save(response)
+    return response
+
+
+def excel_upload(request):
+    return render(request, '204.html')

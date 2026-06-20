@@ -257,7 +257,6 @@ def usuarios_listar(request):
         tiposactivos = TiposActivos.TIPOS
         paises = Paises.objects.all().order_by('nombre')
         areas = NombresAreas.objects.all().order_by('nombre')
-        areas = NombresAreas.objects.all().order_by('nombre')
         if request.user.is_superuser:
             personas = UsuariosPersonas.objects.all().order_by('id')
         else:
@@ -274,11 +273,11 @@ def usuarios_listar(request):
         estado = request.POST.get('estado')
         pais = request.POST.get('pais')
         tipoactivo = request.POST.get('tipoactivo')
-        area = request.POST.get('area')
+        area = int(request.POST.get('area'))
         if (accion == AccionesCrud.CREAR):
             status, mensaje = crear_persona(username,nombres,apellidos,email,perfil,pais,tipoactivo,area,estado)
             if (status != 200):
-                print(f'Status:{status}. Mensaje:{mensaje}')
+                print(f'Status: {status}. Mensaje: {mensaje}')
         else:
             modificar_persona(id,username,nombres,apellidos,email,perfil,pais,tipoactivo,area,estado)
         personas = UsuariosPersonas.objects.all().order_by('id')
@@ -310,7 +309,7 @@ def crear_persona(username,nombres,apellidos,email,perfil,pais,tipoactivo,area,e
         nuevo_usuario.save()
         userid = nuevo_usuario.id
         try:
-            UsuariosPersonas.objects.create(username=username,nombres=nombres,apellidos=apellidos,email=email,perfil=perfil,pais_id=pais,usuario_id=userid,tipoactivo=tipoactivo,area=area,estado=estado)
+            UsuariosPersonas.objects.create(username=username,nombres=nombres,apellidos=apellidos,email=email,perfil=perfil,pais_id=pais,usuario_id=userid,tipoactivo=tipoactivo,area_id=area,estado=estado)
             status , mensaje = mail_nueva_clave(nombres,apellidos,username,newpassword,email)
         except Exception as e:
             status = 400
@@ -318,7 +317,7 @@ def crear_persona(username,nombres,apellidos,email,perfil,pais,tipoactivo,area,e
     except Exception as e:
         status =  404
         mensaje = ' Error= '+str(e), ''
-    print(f'status {status}, mensaje {mensaje}') 
+    print(f'Status: {status}, mensaje {mensaje}') 
 
     return status, mensaje
 
