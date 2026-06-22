@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -93,7 +94,7 @@ WSGI_APPLICATION = 'inventariohlag.wsgi.application'
 #    }
 #}
 
-from decouple import config
+
 
 DATABASES = {
     'default': {
@@ -158,8 +159,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL='/media/' 
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 
-EMAIL_USE_TLS=config("MAIL_TLS")
-EMAIL_USE_SSL=config("MAIL_SSL")
+EMAIL_USE_TLS=False
+EMAIL_USE_SSL=False
 EMAIL_HOST=config("MAIL_HOST")
 EMAIL_HOST_USER=config("MAIL_USER")
 EMAIL_HOST_PASSWORD=config("MAIL_PASS")
