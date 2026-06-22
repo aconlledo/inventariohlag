@@ -49,7 +49,7 @@ def mail_nueva_clave(nombre,apellido,username,password,mail):
     mail_admin =  User.objects.get(id=1).email
     from_email = EMAIL_HOST_USER
     to_email = [mail,mail_admin]
-    email = EmailMessage(subject, body, from_email, to_email) 
+    email = EmailMessage(subject, body, from_email, to_email)  
     try:
         email.send()
         status = 200
