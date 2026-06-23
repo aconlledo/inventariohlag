@@ -58,16 +58,16 @@ class Constantes:
     DEFAULTCOUNTRY = 1    # Viene del id de la tabla tablas_paises
     DEFAULTCITY = 1    # Viene del id de la tabla tablas_ciudades
     TRANSFERENCIA = 1
-    MAIL_ADMIN = 'aconlledo@vilco.cl'
-    URL_SERVERPROD = 'http://127.0.0.1'
+    MAIL_ADMIN = 'eduardo.duran@hlag.com'
+    URL_SERVERPROD = 'http://assets.hlag-cl.com'
     URL_SERVERTEST = 'http://127.0.0.1:8000'
-    URL_SERVERLOCAL = 'http://127.0.0.1:8000'
+    URL_SERVERLOCAL = 'http://127.0.0.1'
     # Dependiendo del servidor en cual se instalara la aplicacion el valor de la URL_TALLERACTUAL 
     # debe ser igual a uno de los anteriores
     URL_SERVERACTUAL = URL_SERVERLOCAL
 
     REVISESUMAIL = ' \nPlease check your inbox or spam folder..'
-    FIRMA_SOPORTE = 'Do not hesitate to contact our Support if you have any problems..\n\n'
+    FIRMA_SOPORTE = 'Do not hesitate to contact our Support if you have any problem.\n\n'
     FIRMA_CORREOS = 'This is an email sent automatically from Inventory Managment HAPAG. Please do not reply\n\nSincerely, Inventory Managment HAPAG\n\n'
     
    
